@@ -1,7 +1,7 @@
 from keras.engine.topology import Input
 from keras.engine.training import Model
 from keras.layers.convolutional import Conv2D, Conv1D
-from keras.layers.core import Activation, Dense, Flatten
+from keras.layers.core import Activation, Dense, Flatten, Lambda
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 from keras.optimizers import Adam
@@ -11,12 +11,8 @@ import pickle
 
 class PolicyValueNet():
     def __init__(self, model_file=None):
-        self.board_width = 5
-        self.board_height = 12
-
         self.l2_const = 1e-4  # coef of l2 penalty
         self.create_net()
-
         self.train_op()
 
         if model_file:
@@ -25,9 +21,9 @@ class PolicyValueNet():
 
 
     def create_net(self):
-        board = Input((self.board_width, self.board_height))
+        board = Input((5, 12))
         probMap = Input((12,12))
-        isFirstHand = Input((1))
+        isFirstHand = Input((1,))
 
         # conv layers
         network1 = Conv1D(filters=8, kernel_size=3, padding="same", data_format="channels_first",
@@ -39,7 +35,7 @@ class PolicyValueNet():
         network2 = Conv1D(filters=32, kernel_size=3, padding="same", data_format="channels_first",
                           activation="relu", kernel_regularizer=l2(self.l2_const))(network2)
 
-        network = K.concatenate([network1,network2], axis=1)
+        network = Lambda(lambda x: K.concatenate([x[0],x[1]], axis=1+1))([network1,network2])
 
         # state value layers
         value_net = Conv1D(filters=4, kernel_size=1, data_format="channels_first", activation="relu",
@@ -47,12 +43,12 @@ class PolicyValueNet():
         value_net = Conv1D(filters=2, kernel_size=1, data_format="channels_first", activation="relu",
                            kernel_regularizer=l2(self.l2_const))(value_net)
         value_net = Flatten()(value_net)
-        value_net = K.concatenate([value_net,isFirstHand]) # 考虑先后手
+        value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]))([value_net,isFirstHand]) # 考虑先后手
         value_net = Dense(32, kernel_regularizer=l2(self.l2_const))(value_net)
         value_net = Dense(32, kernel_regularizer=l2(self.l2_const))(value_net)
         self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
 
-        self.model = Model([board,probMap,isFirstHand], self.value_net)
+        self.model = Model(inputs=[board,probMap,isFirstHand], outputs=self.value_net)
 
 
     def train_op(self):
@@ -82,3 +78,5 @@ class PolicyValueNet():
 
     def save_model(self, model_file):
         pickle.dump(self.model, open(model_file, 'wb'), protocol=2)
+
+PolicyValueNet()

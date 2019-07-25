@@ -1,8 +1,8 @@
 import numpy as np
 import keras.backend as K
 
-m1=np.random.randint(0,2,(1))
-m2=np.random.randint(0,100,(2*(5+12)*12))
+m1=np.random.randint(0,2,(2,1,))
+m2=np.random.randint(0,100,(2,2*(5+12)*12))
 
 print(m1)
 print(m2)
