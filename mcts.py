@@ -37,7 +37,7 @@ class TreeNode:
                 return max(self.children, lambda x: x.get_value())
 
         if self.is_leaf():
-            end, isWin = basic.game_end() # 检查游戏是否结束
+            end, isWin = basic.game_end(self) # 检查游戏是否结束
             if not end:
                 self.extend()
                 return s()
@@ -90,7 +90,7 @@ class TreeNode:
 
     def playout(self):
         if self.is_leaf():
-            end, isWin = basic.game_end() # 检查游戏是否结束
+            end, isWin = basic.game_end(self) # 检查游戏是否结束
             if not end:
                 self.extend()
                 playout_fn(self).playout()  # playout_fn最后一步要把走法转换为self对应的子节点
