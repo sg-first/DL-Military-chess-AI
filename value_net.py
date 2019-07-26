@@ -22,7 +22,7 @@ class PolicyValueNet():
 
     def create_net(self):
         board = Input((5, 12))
-        probMap = Input((12,12))
+        probTable = Input((12,12+2)) # 多出来那两个是对应的坐标
         isFirstHand = Input((1,))
 
         # conv layers
@@ -31,7 +31,7 @@ class PolicyValueNet():
         network1 = Conv1D(filters=32, kernel_size=3, padding="same", data_format="channels_first",
                          activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
         network2 = Conv1D(filters=8, kernel_size=3, padding="same", data_format="channels_first",
-                          activation="relu", kernel_regularizer=l2(self.l2_const))(probMap)
+                          activation="relu", kernel_regularizer=l2(self.l2_const))(probTable)
         network2 = Conv1D(filters=32, kernel_size=3, padding="same", data_format="channels_first",
                           activation="relu", kernel_regularizer=l2(self.l2_const))(network2)
 
@@ -48,7 +48,7 @@ class PolicyValueNet():
         value_net = Dense(32, kernel_regularizer=l2(self.l2_const))(value_net)
         self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
 
-        self.model = Model(inputs=[board,probMap,isFirstHand], outputs=self.value_net)
+        self.model = Model(inputs=[board,probTable,isFirstHand], outputs=self.value_net)
 
 
     def train_op(self):
