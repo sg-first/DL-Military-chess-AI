@@ -44,8 +44,8 @@ class PolicyValueNet():
                            kernel_regularizer=l2(self.l2_const))(value_net)
         value_net = Flatten()(value_net)
         value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]))([value_net,otherFeature]) # 考虑其它特征
-        value_net = Dense(32, kernel_regularizer=l2(self.l2_const))(value_net)
-        value_net = Dense(32, kernel_regularizer=l2(self.l2_const))(value_net)
+        value_net = Dense(32, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net)
+        value_net = Dense(16, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net) # 这里原来是线性层，改成了relu
         self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
 
         self.model = Model(inputs=[board,probTable,otherFeature], outputs=self.value_net)
