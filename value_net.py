@@ -23,7 +23,7 @@ class PolicyValueNet():
     def create_net(self):
         board = Input((5, 12))
         probTable = Input((12,12+2)) # 多出来那两个是对应的坐标
-        handNum = Input((1,))
+        otherFeature = Input((3,)) # 目前手数，我方棋子数，敌方棋子数
 
         # conv layers
         network1 = Conv1D(filters=8, kernel_size=3, padding="same", data_format="channels_first",
@@ -43,12 +43,12 @@ class PolicyValueNet():
         value_net = Conv1D(filters=2, kernel_size=1, data_format="channels_first", activation="relu",
                            kernel_regularizer=l2(self.l2_const))(value_net)
         value_net = Flatten()(value_net)
-        value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]))([value_net,handNum]) # 考虑先后手
+        value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]))([value_net,otherFeature]) # 考虑其它特征
         value_net = Dense(32, kernel_regularizer=l2(self.l2_const))(value_net)
         value_net = Dense(32, kernel_regularizer=l2(self.l2_const))(value_net)
         self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
 
-        self.model = Model(inputs=[board,probTable,handNum], outputs=self.value_net)
+        self.model = Model(inputs=[board,probTable,otherFeature], outputs=self.value_net)
 
 
     def train_op(self):
