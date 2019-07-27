@@ -1,5 +1,3 @@
-import numpy as np
-import copy
 import math
 import basic
 
@@ -15,11 +13,12 @@ def ln(x):
     return math.log(x,math.e)
 
 class TreeNode:
-    def __init__(self, isEne, cMap, probTable, move = None, parent = None):
+    def __init__(self, isEne, cMap, probTable, posList, move = None, parent = None):
         self._parent = parent
         self.move = move
         self.cMap = cMap
         self.probTable = probTable
+        self.posList = posList
         self.isEne = isEne
         self.children = []
         self._n_visits = 1  # 快速走棋次数
@@ -72,9 +71,9 @@ class TreeNode:
         for i in range(12):
             for j in range(5):
                 if self.isEne:
-                    condition = self.cMap[i][j]==13
+                    condition = basic.IsEneChess(i,j,self.cMap)
                 else:
-                    condition = self.cMap[i][j]>=1 and self.cMap[i][j]<=12
+                    condition = basic.IsMyChess(i,j,self.cMap)
                 if condition:
                     allPos=basic.getNearPos(i,j)
                     for newi,newj in allPos:
@@ -83,7 +82,8 @@ class TreeNode:
                         newCMap[newi][newj]=chess
                         newCMap[i][j] = 0
                         # 扩展子节点
-                        self.children.append(TreeNode(not self.isEne, self.cMap, self.probTable, ((i,j),(newi,newj), self)))
+                        self.children.append(TreeNode(not self.isEne, self.cMap, self.probTable, self.posList,
+                                                      ((i,j),(newi,newj), self)))
 
     def is_leaf(self):
         return len(self.children) == 0
@@ -103,8 +103,8 @@ class TreeNode:
 class MCTS:
     """An implementation of Monte Carlo Tree Search."""
 
-    def __init__(self, cMap, probTable):
-        self.root = TreeNode(False, cMap, probTable)
+    def __init__(self, cMap, probTable, posList):
+        self.root = TreeNode(False, cMap, probTable, posList)
 
     def simulation(self): # 调用一次是一次模拟，为了获取更好的快速走棋评分
         node = self.root
