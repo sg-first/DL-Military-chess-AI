@@ -7,19 +7,21 @@ epoch = 0
 n_epoch = 10000 # 总训练轮次（超参数）
 n_playout = 10000 # 模拟次数（超参数）
 
-_n_qc = 1 # 快速走棋总次数，用于UCB公式计算
+_n_qc = 1 # 快速走棋总次数，用于UCB公式计算（每手更新）
 
 def ln(x):
     return math.log(x,math.e)
 
 class TreeNode:
-    def __init__(self, isEne, cMap, probTable, posList, move = None, parent = None):
-        self._parent = parent
-        self.move = move
+    def __init__(self, isEne, cMap, probTable, posList, layer = 0, move = None, parent = None):
+        self.parent = parent
+        self.move = move # 从哪移动到哪，注意，这个实际是上一手走的
         self.cMap = cMap
         self.probTable = probTable
         self.posList = posList
         self.isEne = isEne
+        self.layer = layer # handNum+layer=上次走完的总手数
+
         self.children = []
         self._n_visits = 1  # 快速走棋次数
 
@@ -56,8 +58,8 @@ class TreeNode:
     def update_recursive(self, isWin):
         """更新所有父节点的快速走棋评分
         """
-        if self._parent:
-            self._parent.update_recursive(isWin)
+        if self.parent:
+            self.parent.update_recursive(isWin)
         self.update(isWin)
 
     def get_value(self):
@@ -79,11 +81,14 @@ class TreeNode:
                     for newi,newj in allPos:
                         newCMap = self.cMap[:]
                         chess = self.cMap[i][j]
+                        isMove = False
+                        if chess == 0: # 移动，不吃子
+                            isMove = True
                         newCMap[newi][newj]=chess
                         newCMap[i][j] = 0
                         # 扩展子节点
-                        self.children.append(TreeNode(not self.isEne, self.cMap, self.probTable, self.posList,
-                                                      ((i,j),(newi,newj), self)))
+                        self.children.append(TreeNode(not self.isEne, self.cMap, self.probTable, self.posList, self.layer+1,
+                                                      ((i,j),(newi,newj),isMove), self))
 
     def is_leaf(self):
         return len(self.children) == 0
@@ -100,11 +105,40 @@ class TreeNode:
             playout_fn(self).playout()  # playout_fn最后一步要把走法转换为self对应的子节点
 
 
+lastUsNum = None # 上次使用MCTS时我方棋子数
+lastEneNum = None # 对方棋子数
+
 class MCTS:
     """An implementation of Monte Carlo Tree Search."""
 
-    def __init__(self, cMap, probTable, posList):
+    def __init__(self, handNum, cMap, probTable, posList):
         self.root = TreeNode(False, cMap, probTable, posList)
+        # 统计双方棋子数
+        usNum = 0
+        eneNum = 0
+        global lastUsNum
+        global lastEneNum
+        for i in range(12):
+            for j in range(5):
+                if basic.IsMyChess(i,j,cMap):
+                    usNum += 1
+                if basic.IsEneChess(i,j,cMap):
+                    eneNum += 1
+        # 第一次使用，初始化lastUsNum
+        if handNum == 1 or handNum == 2:
+            lastUsNum = usNum
+            lastEneNum = eneNum
+        # 棋子数有变，更新吃子记录
+        if usNum != lastUsNum:
+            lastUsNum = usNum
+            basic.eneBeatHand = handNum - 1
+        if eneNum != lastEneNum:
+            lastEneNum = eneNum
+            basic.eneBeatHand = handNum - 1
+        # 调整其它变量
+        global _n_qc
+        _n_qc = 1
+        basic.handNum = handNum
 
     def simulation(self): # 调用一次是一次模拟，为了获取更好的快速走棋评分
         node = self.root
@@ -118,4 +152,9 @@ class MCTS:
         # 开始模拟
         for _ in range(n_playout):
             self.simulation()
-        return self.root.select().move
+
+        p1,p2,isMove = self.root.select().move
+        if not isMove: # 如果是吃子，记录我方吃子手数
+            basic.usBeatHand = basic.handNum
+
+        return (p1,p2)

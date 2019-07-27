@@ -1,117 +1,91 @@
-''' ************************************************************************ */
-/* 己方棋子编码约定:														*/
-/*	1司令,2军长,3师长,4旅长,5团长,6营长,7连长,8排长,9工兵,10地雷，11炸弹,12军旗      */
-/* 对方方棋子编码约定:														*/
-/*	-1司令,-2军长,-3师长,-4旅长,-5团长,-6营长,-7连长,-8排长,-9工兵,-10地雷，-11炸弹,-12军旗      */
-/*	13未知对方棋子,0空棋位													*/
-/* ************************************************************************ '''
-cMap=[[0]*5]*12#棋盘
-''' ************************************************************************ */
-/* 函数功能：i,j位置是否本方棋子											*/
-/* 接口参数：																*/
-/*     char cMap[12][5] 棋盘局面											*/
-/*     i,j 棋盘位置行列号												*/
-/* 返回值：																	*/
-/*     1己方棋子，0空棋位或对方棋子											*/
-/* ************************************************************************ '''
-def IsMyChess(i,j):
+'''  
+ 己方棋子编码约定:														
+	1司令,2军长,3师长,4旅长,5团长,6营长,7连长,8排长,9工兵,10地雷，11炸弹,12军旗      
+ 对方方棋子编码约定:
+    14军旗 13未知对方棋子
+    0空棋位
+'''
+
+# i,j位置是否本方棋子
+def IsMyChess(i,j,cMap):
     if (cMap[i][j]>=1 and cMap[i][j] <= 12) :
         return 1
     else:
         return 0
-#是否为敌方棋子
-def IsEneChess(i,j):
-    if cMap[i][j] == 13 or cMap[i][j] == -12:
+
+# 是否为敌方棋子
+def IsEneChess(i,j,cMap):
+    if cMap[i][j] == 13 or cMap[i][j] == 14:
         return 1
     else:
         return 0
-'''cMap[1][1]=13
-print(IsEneChess(1,1))'''
-'''/* ************************************************************************ */
-/* 函数功能：i, j位置是否本方可移动的棋子 * /
-/* 接口参数： * /
-/* char cMap[12][5] 棋盘局面 * /
-/* int i, j 棋盘位置行列号 * /
-/* 返回值： * /
-/* 1己方可移动棋子(司令, 军长, ..., 工兵, 炸弹)，0军旗, 地雷, 对方棋子或空棋位*/
-/* ************************************************************************ */'''
-def IsMyMovingChess(i,j):
-    if cMap[i][j]>=1 and cMap[i][j]<=9 or cMap[i][j]==11:#warning :crossline?
+
+# i,j位置是否本方可移动的棋子
+def IsMyMovingChess(i,j,cMap):
+    if cMap[i][j]>=1 and cMap[i][j]<=9 or cMap[i][j]==11: # warning :crossline?
         return 1
     else:
         return 0
+
 #是否为敌方可移动棋子 未翻译
-'''def IsEmeMovingChess(i,j):
-    if cMap[i][j]==13:
-'''
+
 def IsAfterHill(i,j):
     if i*5+j==31 or i*5+j==33:
         return 1
     else:
         return 0
+
 def IsBeforeHill(i,j):
     if (i * 5 + j == 26 or i * 5 + j == 28):
         return 1
     else:
         return 0
+
 def IsMoveCamp(i,j):
     if i * 5 + j == 11 or i * 5 + j == 13 or i * 5 + j == 17 or i * 5 + j == 21 or i * 5 + j == 23 or i * 5 + j == 36 or i * 5 + j == 38 or i * 5 + j == 42 or i * 5 + j == 46 or i * 5 + j == 48:
         return 1
     else:
         return 0
+
 def IsMyMoveCamp(i,j):
     if i * 5 + j == 36 or i * 5 + j == 38 or i * 5 + j == 42 or i * 5 + j == 46 or i * 5 + j == 48:
         return 1
     else:
         return 0
+
 def IsEnemyMoveCamp(i, j):
     if i * 5 + j == 11 or i * 5 + j == 13 or i * 5 + j == 17 or i * 5 + j == 21 or i * 5 + j == 23 :
         return 1
     else:
         return 0
-'''/* ************************************************************************ */
-/* 函数功能：i, j位置是否大本营 * /
-/* 接口参数： * /
-/* int i, j 棋盘位置行列号 * /
-/* 返回值： * /
-/* 1是大本营，0不是大本营 * /
-/* ************************************************************************ */'''
+
+# i,j位置是否大本营
 def IsBaseCamp(i,j):
     if (i * 5 + j == 1 or i * 5 + j == 3 or i * 5 + j == 56 or i * 5 + j == 58):
         return 1
     else:
         return 0
+
 def IsMyBaseCamp(i, j):
     if (i * 5 + j == 56 or i * 5 + j == 58):
         return 1
     else:
         return 0
+
 def IsEnemyBaseCamp(i,j):
     if (i * 5 + j == 1 or i * 5 + j == 3):
         return 1
     else:
         return 0
-'''/* ************************************************************************ */
-/* 函数功能：i, j位置是否有棋子占位的行营 * /
-/* 接口参数： * /
-/* char cMap[12][5] 棋盘局面 * /
-/* int i, j 棋盘位置行列号 * /
-/* 返回值： * /
-/* 1有棋子占位的行营, 0不是行营或是空行营 * /
-/* ************************************************************************ */'''
-def IsFilledCamp(i,j):
-    if (IsMoveCamp(i, j) and cMap[i][j] != 0): #warn: crossline
+
+# i,j位置是否有棋子占位的行营
+def IsFilledCamp(i,j,cMap):
+    if (IsMoveCamp(i, j) and cMap[i][j] != 0): # warn: crossline
         return 1
     else:
         return 0
-'''/* ************************************************************************ */
-/* 函数功能：i, j位置是否有铁路 * /
-/* 接口参数： * /
-/* char cMap[12][5] 棋盘局面 * /
-/* int i, j 棋盘位置行列号 * /
-/* 返回值： * /
-/* 1有铁路, 0无铁路 * /
-/* ************************************************************************ */'''
+
+# i,j位置是否有铁路
 def IsAcrossRailway(i):
     if (i == 1 or i == 5 or i == 6 or i == 10):
         return 1
@@ -129,49 +103,31 @@ def IsEngineerRailway(i,j):
         return 0
 def shortestpathtojunqi(i,j):
         return abs(11 - i) + abs(3 - j)
- #未考虑斜向路线
-'''/* ************************************************************************ */
-/* 函数功能：双方布局后棋局初始化（完成） * /
-/* 接口参数： * /
-/* char * cOutMessage 布局字符序列 * /
-/* ************************************************************************ */'''
-def InitMap(cOutMessage): # 这个是用之前计算好的数据处理，所以是cOutMessage
-    for i in range(6):
-        for j in range(5):
-            if IsMoveCamp(i,j):
-                cMap[i][j]=0
-            else:
-                cMap[i][j]=13
-    k=6
-    for i in range(6,12):
-        for j in range(5):
-            if(IsMoveCamp(i,j)):
-                cMap[i][j]=0
-            else:
-                cMap[i][j]=cOutMessage[k+1]
-def getNearPos (i,j):
+# 未考虑斜向路线
+
+def getNearPos(i,j):
     result=[]
     if (i > 0 and not (IsAfterHill(i, j))):
         result.append((i - 1, j))
- #可以左移
+    # 可以左移
     if (j > 0):
         result.append((i, j-1))
- #可以右移
+    # 可以右移
     if (j < 4):
         result.append((i, j+1))
- #可以后移
+    # 可以后移
     if (i < 11 and not(IsBeforeHill(i, j))):
         result.append((i+1, j))
- #可以左上进行营
+    # 可以左上进行营
     if (IsMoveCamp(i - 1, j - 1)):
         result.append((i-1, j-1))
- #可以右上进行营
+    # 可以右上进行营
     if (IsMoveCamp(i - 1, j + 1)):
         result.append((i-1, j+1))
- #可以左下进行营
+    # 可以左下进行营
     if (IsMoveCamp(i + 1, j - 1)):
         result.append((i+1, j-1))
- #可以右下进行营
+    # 可以右下进行营
     if (IsMoveCamp(i + 1, j + 1)):
         result.append((i+1, j+1))
     if (IsMoveCamp(i, j)):
@@ -180,4 +136,90 @@ def getNearPos (i,j):
         result.append((i+1, j-1))
         result.append((i+1, j+1))
     return result
-#print(getNearPos(1,1)) #test
+
+# 概率表棋子对应下标
+siling = 9
+junzhang = 8
+shizhang = 7
+lvzhang = 6
+tuanzhang = 5
+yingzhang = 4
+lianzhang = 3
+paizhang = 2
+gongbing = 1
+junqi = 0
+dilei = 10
+zhadan = 11
+
+usBeatHand = None # 我方上次吃子手数
+eneBeatHand = None # 敌方上次吃子手数
+handNum = None # 目前手数
+
+def game_end(node):
+    findEneJunqi = False
+    findEne = False
+    findUs = False
+    findUsJunqi = False
+
+    for i in range(12):
+        for j in range(5):
+            if node.cMap[i][j]==14:
+                findEneJunqi = True
+            if IsEneChess(i,j,node.cMap):
+                findEne = True
+            if node.cMap[i][j]==12:
+                findUsJunqi = True
+            if IsMyChess(i,j,node.cMap):
+                findUs = True
+
+    if not findUsJunqi: # 未找到我方军棋，我方输
+        return True,False
+    if not findUs: # 未找到我方棋子，我方输
+        return True,False
+    if not findEne: # 未找到敌方棋子，敌方输
+        return True,True
+    if (not findEneJunqi) and node.probTable[junqi]==1: # 归一化之后为1，已经确定敌方军棋
+        return True,True # 未找到敌方军棋，敌方输
+
+    handNum_i = handNum + node.layer # 目前总手数
+    moveNum = handNum_i - max(eneBeatHand, usBeatHand) # 目前已有多少步未吃子
+    if moveNum < 30: # 不满足磨棋的先决条件
+        return False,None
+    else:
+        maxMoveNum = moveNum - 30  # 剩余最大不吃子次数
+        count = 0
+        node_i = node
+        isMoqi = False
+        while(1):
+            if node_i.move is None: # 确定不是第二层（最大只能到第二层）
+                break
+            else:
+                _,_,isMove = node_i.move
+                # 看本手是否吃子，调整计数
+                if isMove: # 没有吃子
+                    count += 1
+                else:
+                    break # 吃子了，未磨棋
+                # 30手未吃子，确定磨棋
+                if count == maxMoveNum:
+                    isMoqi = True
+                    break
+                # 看上一手
+                node_i = node_i.parent # 前面已经确定不是第二层，这里不用判断了
+
+        if not isMoqi:
+            return False,None
+        else: # 确认磨棋胜方
+            while(1):
+                node_i = node_i.parent # 看上一手
+                if node_i.move is None:  # 确定不是第二层（最大只能到第二层）
+                    break
+                else:
+                    _, _, isMove = node_i.move
+                    if not isMove: # 吃子了
+                        return False,node_i.isEne # 吃子是它的父节点走的，所以是isEne，相当于not not isEne
+            # 上次吃子不在模拟里
+            if eneBeatHand > usBeatHand:  # 大的后吃子，胜出
+                return True, False
+            else:
+                return True, True
