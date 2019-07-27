@@ -1,5 +1,6 @@
 import math
 import basic
+import simulate
 
 value_fn = None # 神经网络估值函数
 playout_fn = None # 快速走棋函数
@@ -79,15 +80,9 @@ class TreeNode:
                 if condition:
                     allPos=basic.getNearPos(i,j)
                     for newi,newj in allPos:
-                        newCMap = self.cMap[:]
-                        chess = self.cMap[i][j]
-                        isMove = False
-                        if chess == 0: # 移动，不吃子
-                            isMove = True
-                        newCMap[newi][newj]=chess
-                        newCMap[i][j] = 0
+                        newCMap, isMove = simulate.simMove(self,j,i,newj,newi,self.isEne)
                         # 扩展子节点
-                        self.children.append(TreeNode(not self.isEne, self.cMap, self.probTable, self.posList, self.layer+1,
+                        self.children.append(TreeNode(not self.isEne, newCMap, self.probTable, self.posList, self.layer+1,
                                                       ((i,j),(newi,newj),isMove), self))
 
     def is_leaf(self):
