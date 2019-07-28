@@ -80,9 +80,9 @@ class TreeNode:
                 if condition:
                     allPos=basic.getNearPos(i,j)
                     for newi,newj in allPos:
-                        newCMap, isMove = simulate.simMove(self,j,i,newj,newi,self.isEne)
+                        cMap, isMove, posList = simulate.simMove(self,j,i,newj,newi,self.isEne)
                         # 扩展子节点
-                        self.children.append(TreeNode(not self.isEne, newCMap, self.probTable, self.posList, self.layer+1,
+                        self.children.append(TreeNode(not self.isEne, cMap, self.probTable, posList, self.layer+1,
                                                       ((i,j),(newi,newj),isMove), self))
 
     def is_leaf(self):

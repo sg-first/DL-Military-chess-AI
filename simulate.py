@@ -6,5 +6,12 @@ def findChess(x,y,posList):
         else:
             sub += 1
 
+def setDie(sub,posList):
+    posList[sub] = (-1,-1)
+
+def isDie(sub,posList):
+    x,y = posList[sub]
+    return x==-1 and y==-1
+
 def simMove(node,x1,y1,x2,y2,isEne):
     pass
