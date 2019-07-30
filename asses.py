@@ -4,8 +4,7 @@ def setDie(sub,posList): # 仅该函数对posList产生副作用
     posList[sub] = (-1,-1)
 
 def isDie(sub,posList):
-    x,y = posList[sub]
-    return x==-1 and y==-1
+    return posList[sub] == (-1,-1)
 
 def codeToStrength(type):
     if type==basic.zhadan:

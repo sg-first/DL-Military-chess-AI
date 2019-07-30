@@ -1,9 +1,9 @@
 import math
 import basic
 import simulate
+import playout
 
 value_fn = None # 神经网络估值函数
-playout_fn = None # 快速走棋函数
 epoch = 0
 n_epoch = 10000 # 总训练轮次（超参数）
 n_playout = 10000 # 模拟次数（超参数）
@@ -93,11 +93,11 @@ class TreeNode:
             end, isWin = basic.game_end(self) # 检查游戏是否结束
             if not end:
                 self.extend()
-                playout_fn(self).playout()  # playout_fn最后一步要把走法转换为self对应的子节点
+                playout._playout(self).playout()  # playout._playout(self)最后一步要把走法转换为self对应的子节点
             else:
                 self.update_recursive(isWin) # 递归更新快速走棋评分
         else:
-            playout_fn(self).playout()  # playout_fn最后一步要把走法转换为self对应的子节点
+            playout._playout(self).playout()  # playout._playout(self)最后一步要把走法转换为self对应的子节点
 
 
 lastUsNum = None # 上次使用MCTS时我方棋子数
