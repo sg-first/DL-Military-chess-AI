@@ -10,7 +10,7 @@ def tableToStr(table):
     return s
 
 def writeLine(msg,p):
-    p.stdin.write(msg+'\r\n'.encode())
+    p.stdin.write((msg+'\r\n').encode())
     p.stdin.flush()
 
 def _playout(node):
