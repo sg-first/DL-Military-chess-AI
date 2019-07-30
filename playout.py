@@ -1,7 +1,13 @@
 import subprocess
 
 def tableToStr(table):
-    return str(table[1:len(table)-1])
+    s = str(table)
+    s = s[1:len(s)-1]
+    s = s.replace('[','')
+    s = s.replace(' ','')
+    s = s.replace('],','\n')
+    s = s.replace(']', '')
+    return s
 
 def _playout(node):
     p = subprocess.Popen('playout.exe', stdout=subprocess.PIPE, stdin=subprocess.PIPE)
@@ -21,4 +27,3 @@ def _playout(node):
                 if oldPos==oldi and newPos==newi:
                     return i
             raise Exception("Can't find the desired child node")
-        
