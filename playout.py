@@ -5,7 +5,7 @@ def tableToStr(table):
     s = s[1:len(s)-1]
     s = s.replace('[','')
     s = s.replace(' ','')
-    s = s.replace('],','\n')
+    s = s.replace('],','-n')
     s = s.replace(']', '')
     return s
 
