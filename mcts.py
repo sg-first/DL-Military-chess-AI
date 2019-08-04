@@ -27,7 +27,9 @@ class TreeNode:
         self._n_visits = 1  # 快速走棋次数
 
         # 不管是我方还是敌方，胜率都是以我方为标准，但是选择的时候敌方的层选min
-        self.nnQ = value_fn(self.cMap,self.probTable) # 神经网络胜率，构造时立即预测
+        cMapValue = assess.valueEstimation(cMap)
+        # fix: 还需要其它参数
+        self.nnQ = value_fn(self.cMap,self.probTable,cMapValue) # 神经网络胜率，构造时立即预测
         self.qcQ = 0 # 快速走棋胜率
         self.qcScore = 0 # 快速走棋得分
 
