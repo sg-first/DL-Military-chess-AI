@@ -154,6 +154,7 @@ zhadan = 11
 usBeatHand = None # 我方上次吃子手数
 eneBeatHand = None # 敌方上次吃子手数
 handNum = None # 目前手数
+_maxMoveNum = 31 # 最大不吃子次数
 
 def game_end(node):
     findEneJunqi = False
@@ -183,10 +184,10 @@ def game_end(node):
 
     handNum_i = handNum + node.layer # 目前总手数
     moveNum = handNum_i - max(eneBeatHand, usBeatHand) # 目前已有多少步未吃子
-    if moveNum < 30: # 不满足磨棋的先决条件
+    if moveNum < _maxMoveNum: # 不满足磨棋的先决条件
         return False,None
     else:
-        maxMoveNum = moveNum - 30  # 剩余最大不吃子次数
+        maxMoveNum = moveNum - _maxMoveNum  # 剩余最大不吃子次数
         count = 0
         node_i = node
         isMoqi = False
@@ -200,7 +201,7 @@ def game_end(node):
                     count += 1
                 else:
                     break # 吃子了，未磨棋
-                # 30手未吃子，确定磨棋
+                # 到达指定步数未吃子，确定磨棋
                 if count == maxMoveNum:
                     isMoqi = True
                     break
