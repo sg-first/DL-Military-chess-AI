@@ -20,17 +20,17 @@ def codeToStrength2(type):#19.8.5 update
     if (type == basic.junqi):
         return 12   #军棋子力值应为0，在大本营的棋子-12
     if (type == basic.zhadan or type == basic.shizhang):
-    	return 22
+        return 22
     if (type == basic.tuanzhang or type == basic.dilei):
-    	return 18
+        return 18
     if (type == basic.gongbing):
-    	return 10
+        return 10
     if (type == basic.paizhang):
-    	return 12
+        return 12
     if (type == basic.lianzhang):
         return 14
     if (type == basic.yingzhang):
-    	return 16
+        return 16
     if (type == basic.lvzhang):
         return 20
     if (type == basic.junzhang):
@@ -136,7 +136,7 @@ def shortestpathtojunqi(i,j):
     return abs(11-i)+abs(3-j)
 
 def valuelast3line(i,j,cMap):
-    if i>8 and cMap[i][j]!='l':
+    if i>8 and cMap[i][j] != 12:
         return 15/shortestpathtojunqi(i, j)
     else:
         return 0
@@ -158,9 +158,7 @@ def valueNear(i,j,cMap,node):
         if not(cMap[i2][j2]==0):
 
             if cMap[i2][j2]==13:
-
                 s=getChessStrength(simulate.findChess(j2,i2,node.posList),node)
-
                 if s>eneMax:
                     eneMax=s
             else:
@@ -181,7 +179,8 @@ def valueEstimation(cMap,node):
         for j in range(5):
             if basic.IsMyChess(i,j,cMap):
                 type=codeToType(cMap[i][j])
-                if(not(basic.findJunqi(node.probTable)==-1)and isDie(0,node.posList) ):
+                junqi = basic.findJunqi(node.probTable)
+                if (not(junqi == -1)) and isDie(junqi,node.posList):
                     ff7+=1000
                 ff1 += codeToStrength2(type)
                 ff2 += valueLocation(i, j)
