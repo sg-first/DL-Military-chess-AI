@@ -151,6 +151,19 @@ junqi = 0
 dilei = 10
 zhadan = 11
 
+def findJunqi(probTable):
+    for i in range(12):
+        nowList = probTable[i]
+        if not nowList[junqi] > 0.5: # 军棋位非0
+            isFind = True
+            for j in range(1,12):
+                if nowList[j] > 0.5: # 只允许一个非0
+                    isFind = False
+                    break
+            if isFind:
+                return i
+    return -1
+
 usBeatHand = None # 我方上次吃子手数
 eneBeatHand = None # 敌方上次吃子手数
 handNum = None # 目前手数
