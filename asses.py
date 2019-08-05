@@ -1,4 +1,6 @@
 import basic
+import simulate #import findChess
+eneMax=0
 
 def setDie(sub,posList): # 仅该函数对posList产生副作用
     posList[sub] = (-1,-1)
@@ -13,6 +15,28 @@ def codeToStrength(type):
         return basic.tuanzhang # 地雷=团长
     else :
         return type
+
+def codeToStrength2(type):#19.8.5 update
+    if (type == basic.junqi):
+        return 12   #军棋子力值应为0，在大本营的棋子-12
+    if (type == basic.zhadan or type == basic.shizhang):
+    	return 22
+    if (type == basic.tuanzhang or type == basic.dilei):
+    	return 18
+    if (type == basic.gongbing):
+    	return 10
+    if (type == basic.paizhang):
+    	return 12
+    if (type == basic.lianzhang):
+        return 14
+    if (type == basic.yingzhang):
+    	return 16
+    if (type == basic.lvzhang):
+        return 20
+    if (type == basic.junzhang):
+        return 24
+    if (type == basic.siling):
+        return 30
 
 def getChessStrength(chess,node): # 棋子死亡作为参数传进来？finish
     if isDie(chess,node.posList):
@@ -37,7 +61,7 @@ def ChessComparisons(myc,enc,node):#finish
     encType=isDetermine(enc)
     # 涉及工兵地雷的特判
     if(mytype==1): # if mytype==gongbing
-        if encType==1 or encType == 11:#(encType == gongbing || encType == zhadan)
+        if encType==1 or encType == 11:#(encType == gongbing or encType == zhadan)
             return 2
         elif encType==10: #encType == dilei:
             return 1
@@ -89,3 +113,80 @@ def codeToType(code):#finish
     if code==12 or code==14:
         return basic.junqi
     return -1
+
+def valueLocation(i,j):
+    if(basic.IsAcrossRailway(i) or basic.IsVerticalRailway(i, j)):
+        return 5
+    elif (basic.IsBaseCamp(i, j)):
+        return -12
+    elif basic.IsMyMoveCamp(i, j):
+        return 8
+    elif basic.IsEnemyMoveCamp(i, j):
+        return 10
+    else:
+        return 4
+
+def valueMotivation(type):
+    if not(type==basic.gongbing):
+        return codeToStrength2(type)/4
+    else:
+        return codeToStrength2(type)/9
+
+def shortestpathtojunqi(i,j):
+    return abs(11-i)+abs(3-j)
+
+def valuelast3line(i,j,cMap):
+    if i>8 and cMap[i][j]!='l':
+        return 15/shortestpathtojunqi(i, j)
+    else:
+        return 0
+
+def valuecrosshill(i):
+    if i<=5 and i>=3:
+        return 55*(6-i)-eneMax
+    elif i<3:
+        return 70*(6-i)-eneMax
+    else:
+         return 0
+
+def valueNear(i,j,cMap,node):
+    allPos=basic.getNearPos(i,j)
+    eneMax=0
+    friMax=0
+    for p in allPos:
+        i2,j2=p
+        if not(cMap[i2][j2]==0):
+
+            if cMap[i2][j2]==13:
+
+                s=getChessStrength(simulate.findChess(j2,i2,node.posList),node)
+
+                if s>eneMax:
+                    eneMax=s
+            else:
+                s=codeToStrength2(codeToType(cMap[i2][j2]))
+                if s>friMax:
+                    friMax=s    
+    value=0
+    myStrength=codeToStrength2(codeToType(cMap[i][j]))
+    if(eneMax>=myStrength):
+        value=-eneMax
+    if(friMax>myStrength):
+        value+=friMax/2
+    return value
+
+def valueEstimation(cMap,node):
+    ff1=ff2=ff3=ff4=ff5=ff6=ff7=0
+    for i in range(12):
+        for j in range(5):
+            if basic.IsMyChess(i,j,cMap):
+                type=codeToType(cMap[i][j])
+                if(not(basic.findJunqi(node.probTable)==-1)and isDie(0,node.posList) ):
+                    ff7+=1000
+                ff1 += codeToStrength2(type)
+                ff2 += valueLocation(i, j)
+                ff3 += valueMotivation(type)
+                ff4 += valuelast3line(i, j,cMap)
+                ff5 += valueNear(i, j,cMap,node)
+                ff6 += valuecrosshill(i)
+    return (ff1,ff2,ff3,ff4,ff5,ff6,ff7,ff1+ff2+ff3+ff4+ff5+ff6+ff7)
