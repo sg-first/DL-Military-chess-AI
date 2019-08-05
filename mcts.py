@@ -2,6 +2,7 @@ import math
 import basic
 import simulate
 import playout
+import asses
 
 value_fn = None # 神经网络估值函数
 epoch = 0
@@ -27,7 +28,7 @@ class TreeNode:
         self._n_visits = 1  # 快速走棋次数
 
         # 不管是我方还是敌方，胜率都是以我方为标准，但是选择的时候敌方的层选min
-        cMapValue = assess.valueEstimation(cMap)
+        cMapValue = asses.valueEstimation(cMap,self)
         # fix: 还需要其它参数
         self.nnQ = value_fn(self.cMap,self.probTable,cMapValue) # 神经网络胜率，构造时立即预测
         self.qcQ = 0 # 快速走棋胜率
