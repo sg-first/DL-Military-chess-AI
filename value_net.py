@@ -34,7 +34,7 @@ class PolicyValueNet():
         network2 = Conv1D(filters=32, kernel_size=3, padding="same", data_format="channels_first",
                           activation="relu", kernel_regularizer=l2(self.l2_const))(network2)
 
-        network = Lambda(lambda x: K.concatenate([x[0],x[1]], axis=1+1))([network1,network2])
+        network = Lambda(lambda x: K.concatenate([x[0],x[1]], axis=1+1), output_shape=(32,26))([network1,network2])
 
         # state value layers
         value_net = Conv1D(filters=4, kernel_size=1, data_format="channels_first", activation="relu",
@@ -42,7 +42,7 @@ class PolicyValueNet():
         value_net = Conv1D(filters=2, kernel_size=1, data_format="channels_first", activation="relu",
                            kernel_regularizer=l2(self.l2_const))(value_net)
         value_net = Flatten()(value_net)
-        value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]))([value_net,otherFeature]) # 考虑其它特征
+        value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]), output_shape=(34,))([value_net,otherFeature]) # 考虑其它特征
         value_net = Dense(32, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net)
         value_net = Dense(16, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net) # 这里原来是线性层，改成了relu
         self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
