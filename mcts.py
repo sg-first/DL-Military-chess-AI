@@ -15,7 +15,7 @@ def ln(x):
     return math.log(x,math.e)
 
 class TreeNode:
-    def __init__(self, isEne, cMap, probTable, posList, layer = 0, move = None, parent = None):
+    def __init__(self, isEne:bool, cMap:list, probTable:list, posList:list, layer = 0, move = None, parent = None):
         self.parent = parent
         self.move = move # 从哪移动到哪，注意，这个实际是上一手走的
         self.cMap = cMap
@@ -52,14 +52,14 @@ class TreeNode:
         else:
             return s()
 
-    def update(self,isWin):
+    def update(self,isWin:int):
         """完成一次快速走棋之后更新本节点快速走棋评分
         """
         self._n_visits += 1
         self.qcScore += isWin
         self.qcQ += self.qcScore / (self._n_visits-1) # 取频率为概率
 
-    def update_recursive(self, isWin):
+    def update_recursive(self, isWin:int):
         """更新所有父节点的快速走棋评分
         """
         if self.parent:

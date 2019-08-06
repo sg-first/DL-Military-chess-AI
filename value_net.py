@@ -13,7 +13,6 @@ class PolicyValueNet():
     def __init__(self, model_file=None):
         self.l2_const = 1e-4  # coef of l2 penalty
         self.create_net()
-        self.train_op()
 
         if model_file:
             net_params = pickle.load(open(model_file, 'rb'))
@@ -23,7 +22,7 @@ class PolicyValueNet():
     def create_net(self):
         board = Input((5, 12))
         probTable = Input((12,12+2)) # 多出来那两个是对应的坐标
-        otherFeature = Input((3,)) # 目前手数，我方棋子数，敌方棋子数
+        otherFeature = Input((10,)) # 目前手数，我方棋子数，敌方棋子数，局面评估7项
 
         # conv layers
         network1 = Conv1D(filters=8, kernel_size=3, padding="same", data_format="channels_first",
@@ -49,26 +48,20 @@ class PolicyValueNet():
         self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
 
         self.model = Model(inputs=[board,probTable,otherFeature], outputs=self.value_net)
-
-
-    def train_op(self):
         """
-        Three loss terms：
-        loss = (z - v)^2 + pi^T * log(p) + c||theta||^2
+                Three loss terms：
+                loss = (z - v)^2 + pi^T * log(p) + c||theta||^2
         """
-
         self.model.compile(optimizer=Adam(), loss='mean_squared_error')
 
-        def train_step(board, probMap, isFirstHand, isWin, learning_rate): # isWin与isFirstHand一样为bool列表，表示是否胜利
-            loss = self.model.evaluate([board,probMap,isFirstHand], isWin, batch_size=len(board),
-                                       verbose=0)
-            K.set_value(self.model.optimizer.lr, learning_rate)
-            # fix:目前所有胜利的局面值都为1，实际应当根据Q值更新公式给予远距离的局面一些折扣？
-            self.model.fit([board,probMap,isFirstHand], isWin, batch_size=len(board))
-            return loss[0]
 
-        self.train_step = train_step
-        return train_step
+    def train_step(self, board, probMap, otherFeature, isWin, learning_rate):  # isWin与isFirstHand一样为bool列表，表示是否胜利
+        loss = self.model.evaluate([board, probMap, otherFeature], isWin, batch_size=len(board),
+                                   verbose=0)
+        K.set_value(self.model.optimizer.lr, learning_rate)
+        # fix:目前所有胜利的局面值都为1，实际应当根据Q值更新公式给予远距离的局面一些折扣？
+        self.model.fit([board, probMap, otherFeature], isWin, batch_size=len(board))
+        return loss[0]
 
 
     def get_param(self):
@@ -78,5 +71,3 @@ class PolicyValueNet():
 
     def save_model(self, model_file):
         pickle.dump(self.model, open(model_file, 'wb'), protocol=2)
-
-PolicyValueNet()
