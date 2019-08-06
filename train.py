@@ -7,12 +7,13 @@ loseList = []
 
 class situation:
     def __init__(self, board:list, probMap:list, otherFeature:list, isWin:bool):
-        self.board=np.array(board)
+        self.board = np.array(board)
         for i in range(12):
             probMap[i].append(otherFeature[i][0])
             probMap[i].append(otherFeature[i][1])
-        self.probMap=np.array(probMap)
-        self.otherFeature=np.array(otherFeature)
+        self.probMap = np.array(probMap)
+        self.probMap = self.probMap.T
+        self.otherFeature = np.array(otherFeature)
 
         if isWin:
             winList.append(self)
@@ -35,8 +36,8 @@ def train(modelObj, epoch:int, batch_size:int, learning_rate):
             else:
                 sample = random.choice(loseList)
 
-            allBoard.append(sample.board)
-            allProbMap.append(sample.probMap)
+            allBoard.append([sample.board])
+            allProbMap.append([sample.probMap])
             allOtherFeature.append(sample.otherFeature)
             allIsWin.append(int(isWin))
             isWin = not isWin
