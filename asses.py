@@ -151,6 +151,7 @@ def valuecrosshill(i):
 
 def valueNear(i,j,cMap,node):
     allPos=basic.getNearPos(i,j)
+    global eneMax
     eneMax=0
     friMax=0
     for p in allPos:

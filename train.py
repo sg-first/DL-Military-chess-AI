@@ -1,6 +1,7 @@
 import numpy as np
 import random
 
+trainNum = 0
 winList = []
 loseList = []
 
@@ -45,3 +46,7 @@ def train(modelObj, epoch:int, batch_size:int, learning_rate):
         allOtherFeature = np.array(allOtherFeature)
         allIsWin = np.array(allIsWin)
         modelObj.train_step(allBoard, allProbMap, allOtherFeature, allIsWin, learning_rate)
+
+    global trainNum
+    modelObj.save_model('model'+str(trainNum)+'.pkl')
+    trainNum += 1
