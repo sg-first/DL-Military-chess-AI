@@ -6,11 +6,11 @@ winList = []
 loseList = []
 
 class situation:
-    def __init__(self, board:list, probMap:list, otherFeature:list, isWin:bool):
+    def __init__(self, board:list, probMap:list, posList:list, otherFeature:list, isWin:bool):
         self.board = np.array(board)
         for i in range(12):
-            probMap[i].append(otherFeature[i][0])
-            probMap[i].append(otherFeature[i][1])
+            probMap[i].append(posList[i][0])
+            probMap[i].append(posList[i][1])
         self.probMap = np.array(probMap)
         self.probMap = self.probMap.T
         self.otherFeature = np.array(otherFeature)
