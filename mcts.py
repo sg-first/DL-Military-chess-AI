@@ -81,7 +81,7 @@ class TreeNode:
                 else:
                     condition = basic.IsMyChess(i,j,self.cMap)
                 if condition:
-                    allPos=basic.getNearPos(i,j)
+                    allPos=basic.getAccessibility(i,j,self.isEne)
                     for newi,newj in allPos:
                         cMap, isMove, posList = simulate.simMove(self,j,i,newj,newi,self.isEne)
                         # 扩展子节点

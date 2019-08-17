@@ -137,6 +137,20 @@ def getNearPos(i,j):
         result.append((i+1, j+1))
     return result
 
+def getAccessibility(i,j,isEne):
+    result = []
+    if isEne:
+        isMovingChess = IsEmeMovingChess # fix:这个函数没翻译，还要翻译
+        isChess = IsEneChess
+        isInvChess = IsMyChess
+    else:
+        isMovingChess = IsMyMovingChess
+        isChess = IsMyChess
+        isInvChess = IsEneChess
+
+    # fix:后面翻译扩展部分
+
+
 # 概率表棋子对应下标
 siling = 9
 junzhang = 8
