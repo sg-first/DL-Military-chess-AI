@@ -8,6 +8,8 @@ loseList = []
 class situation:
     def __init__(self, board:list, probMap:list, posList:list, otherFeature:list, isWin:bool):
         self.board = np.array(board)
+        # print(self.board)
+        print(self.board.shape)
         for i in range(25):
             probMap[i].append(posList[i][0])
             probMap[i].append(posList[i][1])
