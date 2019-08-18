@@ -20,8 +20,8 @@ class PolicyValueNet():
 
 
     def create_net(self):
-        board = Input((1, 5, 12))
-        probTable = Input((1, 12+2, 12)) # 多出来那两个是对应的坐标（注意转置）
+        board = Input((1, 12, 5))
+        probTable = Input((1, 12+2, 25)) # 多出来那两个是对应的坐标（注意转置）
         otherFeature = Input((10,)) # 目前手数，我方棋子数，敌方棋子数，局面评估7项
 
         # conv layers
