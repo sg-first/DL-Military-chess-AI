@@ -1,7 +1,7 @@
 import train
 import os
 
-for root, dirs, files in os.walk(r"E:/特种兵的一整本日记(第二本2)"):
+for root, dirs, files in os.walk(r"E:/日记"):
     for file in files:
         f = open(os.path.join(root, file), "r")
         fr = f.read()
@@ -42,3 +42,10 @@ for root, dirs, files in os.walk(r"E:/特种兵的一整本日记(第二本2)"):
             for i in range(7):
                 chessOther[i + 3] = tempassess[i]
             train.situation(chessMap, chessProb, chessPos, chessOther, winorlose)
+
+print(len(train.winList))
+print(len(train.loseList))
+
+import value_net
+model=value_net.PolicyValueNet()
+train.train(model,5000,100)

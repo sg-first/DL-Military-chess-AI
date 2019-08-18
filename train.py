@@ -21,7 +21,7 @@ class situation:
             loseList.append(self)
 
 
-def train(modelObj, epoch:int, batch_size:int, learning_rate):
+def train(modelObj, epoch:int, batch_size:int):
     for i in range(epoch):
         allBoard = []
         allProbMap = []
@@ -46,7 +46,7 @@ def train(modelObj, epoch:int, batch_size:int, learning_rate):
         allProbMap = np.array(allProbMap)
         allOtherFeature = np.array(allOtherFeature)
         allIsWin = np.array(allIsWin)
-        modelObj.train_step(allBoard, allProbMap, allOtherFeature, allIsWin, learning_rate)
+        modelObj.train_step(allBoard, allProbMap, allOtherFeature, allIsWin)
 
     global trainNum
     modelObj.save_model('model'+str(trainNum)+'.pkl')

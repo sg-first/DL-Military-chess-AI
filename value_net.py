@@ -55,10 +55,10 @@ class PolicyValueNet():
         self.model.compile(optimizer=Adam(), loss='mean_squared_error')
 
 
-    def train_step(self, board, probMap, otherFeature, isWin, learning_rate):  # isWin与isFirstHand一样为bool列表，表示是否胜利
+    def train_step(self, board, probMap, otherFeature, isWin):  # isWin与isFirstHand一样为bool列表，表示是否胜利
         loss = self.model.evaluate([board, probMap, otherFeature], isWin, batch_size=len(board),
                                    verbose=0)
-        K.set_value(self.model.optimizer.lr, learning_rate)
+        # K.set_value(self.model.optimizer.lr, learning_rate)
         # fix:目前所有胜利的局面值都为1，实际应当根据Q值更新公式给予远距离的局面一些折扣？
         self.model.fit([board, probMap, otherFeature], isWin, batch_size=len(board))
         return loss[0]
