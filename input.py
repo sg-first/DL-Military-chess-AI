@@ -11,7 +11,9 @@ for root, dirs, files in os.walk(r"E:/日记"):
         chessProb = [[0 for i in range(12)] for i in range(25)]
         chessPos = [[0 for i in range(2)] for i in range(25)]
         chessOther = [0 for i in range(10)]
-        winorlose = bool(diary[len(diary) - 1])
+        tempwinorlose = diary[len(diary) - 1].split()
+        tempwinorlose = [int(x) for x in tempwinorlose]
+        winorlose = bool(tempwinorlose[0])
         for i in range(len(diary) - 1):
             outdiary[i] = diary[i].split("$")  # 读入棋盘
             tempmap1 = outdiary[i][0].split("\n")
