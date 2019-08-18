@@ -37,6 +37,22 @@ for root, dirs, files in os.walk(r"E:/日记"):
                     tempmap3 = ['0' if i == '\x00' else i for i in tempmap2]
                     tempmap3 = [int(x) for x in tempmap3]
                     chessMap[i] = tempmap3
+            for i in range(1, 26):
+                tempProb2 = tempProb1[i].split()
+                tempProb2 = [float(x) for x in tempProb2]
+                chessProb[i - 1] = tempProb2  # 输出问题已解决
+            for i in range(1, 26):
+                tempPos2 = tempPos1[i].split()
+                tempPos2 = [int(x) for x in tempPos2]
+                chessPos[i - 1] = tempPos2
+            tempRounds = [int(x) for x in tempRounds]
+            tempchessNum = [int(x) for x in tempchessNum]
+            tempassess = [float(x) for x in tempassess]
+            chessOther[0] = tempRounds[0]
+            for i in range(2):
+                chessOther[i + 1] = tempchessNum[i]
+            for i in range(7):
+                chessOther[i + 3] = tempassess[i]
             train.situation(chessMap, chessProb, chessPos, chessOther, winorlose)
 
 print(len(train.winList))
