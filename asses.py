@@ -1,12 +1,7 @@
 import basic
-import simulate #import findChess
+import eneSta
+
 eneMax=0
-
-def setDie(sub,posList): # 仅该函数对posList产生副作用
-    posList[sub] = (-1,-1)
-
-def isDie(sub,posList):
-    return posList[sub] == (-1,-1)
 
 def codeToStrength(type):
     if type==basic.zhadan:
@@ -159,7 +154,7 @@ def valueNear(i,j,cMap,node):
         if not(cMap[i2][j2]==0):
 
             if cMap[i2][j2]==13:
-                s=getChessStrength(simulate.findChess(j2,i2,node.posList),node)
+                s=getChessStrength(eneSta.findChess(j2,i2,node.posList),node)
                 if s>eneMax:
                     eneMax=s
             else:
@@ -181,7 +176,7 @@ def valueEstimation(cMap,node):
             if basic.IsMyChess(i,j,cMap):
                 type=codeToType(cMap[i][j])
                 junqi = basic.findJunqi(node.probTable)
-                if (not(junqi == -1)) and isDie(junqi,node.posList):
+                if (not(junqi == -1)) and eneSta.isDie(junqi,node.posList):
                     ff7+=1000
                 ff1 += codeToStrength2(type)
                 ff2 += valueLocation(i, j)
