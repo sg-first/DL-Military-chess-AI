@@ -190,15 +190,15 @@ def getAccessibility(i, j, isEne, posList, cMap):
             y2 = i - 1
             result.append((y2, x2))
         else:
-            for k in range(1, 11):
-                if (y2 > 0 and y2 < 11 and IsVerticalRailway(y2, x2) and IsVerticalRailway(y2 - 1, j) and not (
-                    IsAfterHill(y2, j)) and not (isChess(y2 - 1, j, cMap)) and not (IsFilledCamp(y2 - 1, j, cMap))):
-                    break
+            k=1
+            while (y2 > 0 and y2 < 11 and IsVerticalRailway(y2, x2) and IsVerticalRailway(y2 - 1, j) and not (
+                IsAfterHill(y2, j)) and not (isChess(y2 - 1, j, cMap)) and not (IsFilledCamp(y2 - 1, j, cMap))):
                 y2 = i - k
                 k = k + 1
+                result.append((y2, x2))
                 if isInvChess(y2, x2, cMap):  # 当前位置已经是敌方棋子，不能再前进
                     break
-                result.append((y2, x2))
+                k+=1
 
         y2 = i
         x2 = j
@@ -207,14 +207,14 @@ def getAccessibility(i, j, isEne, posList, cMap):
             x2 = j - 1
             result.append((y2, x2))
         else:
-            for k in range(1, 11):
-                if x2 > 0 and IsAcrossRailway(i) and not (isChess(i, x2 - 1, cMap)) and not (IsFilledCamp(i, x2 - 1, cMap)):
-                    break
+            k=1
+            while x2 > 0 and IsAcrossRailway(i) and not (isChess(i, x2 - 1, cMap)) and not (IsFilledCamp(i, x2 - 1, cMap)):
                 x2 = j - k
                 k = k + 1
+                result.append((y2, x2))
                 if isInvChess(y2, x2, cMap):
                     break
-                result.append((y2, x2))
+                k+=1
 
         y2 = i
         x2 = j
@@ -223,14 +223,15 @@ def getAccessibility(i, j, isEne, posList, cMap):
             x2 = j + 1
             result.append((y2, x2))
         else:
-            for k in range(1, 11):
-                if x2 < 4 and IsAcrossRailway(i) and not (isChess(i, x2 + 1, cMap)) and not (IsFilledCamp(i, x2 + 1, cMap)):
-                    break
+            k=1
+            while x2 < 4 and IsAcrossRailway(i) and not (isChess(i, x2 + 1, cMap)) and not (IsFilledCamp(i, x2 + 1, cMap)):
                 k = k + 1
                 x2 = j + k
+                result.append((y2, x2))
                 if isInvChess(y2, x2, cMap):
                     break
-                result.append((y2, x2))
+                k+=1
+
 
         y2 = i
         x2 = j
@@ -240,11 +241,12 @@ def getAccessibility(i, j, isEne, posList, cMap):
             y2 = i + 1
             result.append((y2, x2))
         else:
-            for k in range(1, 11):
-                if (y2 < 11 and y2 > 0 and IsVerticalRailway(y2, x2) and IsVerticalRailway(y2 + 1, j)
-                        and not (IsBeforeHill(y2, j)) and not (isChess(y2 + 1, j, cMap)) and not (IsFilledCamp(y2 + 1, j, cMap))):
-                    y2 = i + k
-                    result.append((y2, x2))
+            k=1
+            while (y2 < 11 and y2 > 0 and IsVerticalRailway(y2, x2) and IsVerticalRailway(y2 + 1, j)
+                and not (IsBeforeHill(y2, j)) and not (isChess(y2 + 1, j, cMap)) and not (IsFilledCamp(y2 + 1, j, cMap))):
+                y2 = i + k
+                result.append((y2, x2))
+                k+=1
 
         # 后面不用更新x2 y2的值了，因为都是现场计算的
         # 可以左上进行营:左上不是被占用的行营且它是行营
