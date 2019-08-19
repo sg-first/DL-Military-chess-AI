@@ -5,7 +5,8 @@
     14军旗 13未知对方棋子
     0空棋位
 '''
-
+import asses
+import simulate
 # i,j位置是否本方棋子
 def IsMyChess(i,j,cMap):
     if (cMap[i][j]>=1 and cMap[i][j] <= 12) :
@@ -137,6 +138,14 @@ def getNearPos(i,j):
         result.append((i+1, j+1))
     return result
 
+def IsEmeMovingChess(i,j,posList,cMap):
+    if(cMap[i][j]==13):
+        Enetype=findChess(i,j,posList)
+        if (Enetype==dilei or type==junqi):
+            return 0
+        else:
+            return 1
+
 def getAccessibility(i,j,isEne):
     result = []
     if isEne:
@@ -149,8 +158,162 @@ def getAccessibility(i,j,isEne):
         isInvChess = IsEneChess
 
     # fix:后面翻译扩展部分
+    
+    if (isMovingChess(i, j) and not (IsBaseCamp(i, j))):  #己方不在大本营的可移动棋子
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以前移:不在第一行,不在山界后,前方不是己方棋子,前方不是有棋子占领的行营
+        if (i > 0 and not(IsVerticalRailway(i, j)) and not(IsAfterHill(i, j)) and not(isChess(i - 1, j)) and not(IsFilledCamp(i - 1, j))):
+            y2 = i - 1
+            result.append(y2,x2)
+        else:
+            for k in range(1,11):
+                if(y2 > 0 and y2 < 11 and IsVerticalRailway(y2, x2) and IsVerticalRailway(y2 - 1, j) and not (IsAfterHill(y2, j)) and not (isChess(y2 - 1, j))
+						and not (IsFilledCamp(y2 - 1, j))):#c++for循环判断条件
+                        break
+                y2=i-k
+                k=k+1
+                if isInvChess(y2,x2,cMap):#当前位置已经是敌方棋子，不能再前进
+                    break
+                result.append(y2,x2)
 
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以左移:不在最左列,左侧不是己方棋子,左侧不是被占用的行营
+        if (j > 0 and not(IsAcrossRailway(i)) and not(isChess(i, j - 1)) and not(IsFilledCamp(i, j - 1))):
+            x2 = j - 1
+            return(y2,x2)
+        else:
+            for k in range(1,11):
+                if x2 > 0 and IsAcrossRailway(i) and not(isChess(i, x2 - 1)) and not(IsFilledCamp(i, x2 - 1)):
+                    break
+                x2=j-k
+                k=k+1
+                if isInvChess(y2,x2):
+                    break
+                result.append(y2,x2)
 
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以右移:不在最右列,右侧不是己方棋子,右侧不是被占用的行营
+        if (j < 4 and not(IsAcrossRailway(i)) and not(isChess(i, j + 1)) and not(IsFilledCamp(i, j + 1))):
+           x2=j+1
+           result.append(y2,x2)
+        else:
+            for k in range(1,11):
+                if(x2 < 4 and IsAcrossRailway(i) and not(isChess(i, x2 + 1)) and not(IsFilledCamp(i, x2 + 1))):
+                  break
+                k=k+1
+                x2=j+k
+                if isInvChess(y2,x2):
+                    break
+                result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以后移:不在最后列,不在山界前,后侧不是己方棋子,后侧不是被占用的行营
+        if (i < 11 and not(IsVerticalRailway(i, j)) and not(IsBeforeHill(i, j)) and not(isChess(i + 1, j)) and not(IsFilledCamp(i + 1, j))):
+            y2 = i + 1
+            result.append(y2,x2)
+        else:
+            for k in range(1,11):
+                if(2 < 11 and y2 > 0 and IsVerticalRailway(y2, x2) and IsVerticalRailway(y2 + 1, j) and not(IsBeforeHill(y2, j)) and not(isChess(y2 + 1, j)) and
+						not(IsFilledCamp(y2 + 1, j))):
+                        y2 = i + k
+                        result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以左上进行营:左上不是被占用的行营且它是行营
+        if (IsMoveCamp(i - 1, j - 1) and not(IsFilledCamp(i - 1, j - 1))):
+            y2 = i - 1
+            x2 = j - 1
+            result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以右上进行营:右上不是被占用的行营且它是行营
+        if (IsMoveCamp(i - 1, j + 1) and not(IsFilledCamp(i - 1, j + 1))):
+            y2 = i - 1
+            x2 = j + 1
+            result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以左下进行营:左下不是被占用的行营且它是行营
+        if (IsMoveCamp(i + 1, j - 1) and not(IsFilledCamp(i + 1, j - 1))):
+            y2 = i + 1
+            x2 = j - 1
+            result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以右下进行营:右下不是被占用的行营且它是行营
+        if (IsMoveCamp(i + 1, j + 1) and not(IsFilledCamp(i + 1, j + 1))):
+            y2 = i + 1
+            x2 = j + 1
+            result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以左上出行营:目前位置为行营且左上不是己方棋子
+        if (IsMoveCamp(i, j) and not(isChess(i - 1, j - 1))):
+            if (not((IsMoveCamp(i - 1, j - 1)) and IsFilledCamp(i - 1, j - 1))): #如果是行营行营里不能有子
+                y2 = i - 1
+                x2 = j - 1
+                result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以右上出行营:目前位置为行营且右上不是己方棋子
+        if (IsMoveCamp(i,j) and not (isChess(i-1,j+1))):
+            if (not((IsMoveCamp(i - 1, j + 1)) and IsFilledCamp(i - 1, j + 1))):
+                y2 = i - 1
+                x2 = j + 1
+                result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以左下出行营:目前位置为行营且左下不是己方棋子
+        if (IsMoveCamp(i, j)and not(isChess(i + 1, j - 1))):
+            if (not(IsMoveCamp(i + 1, j - 1) and IsFilledCamp(i + 1, j - 1))):
+                y2=i+1
+                x2=j-1
+                result.append(y2,x2)
+
+        y1 = i
+        x1 = j
+        y2 = i
+        x2 = j
+        #可以右下出行营:目前位置为行营且右下不是己方棋子
+        if (IsMoveCamp(i, j) and not(isChess(i + 1, j + 1))):
+            if (not(IsMoveCamp(i + 1, j + 1)) and IsFilledCamp(i + 1, j + 1)):
+                y2 = i + 1
+                x2 = j + 1
+                result.append(y2,x2)
+    return result
 # 概率表棋子对应下标
 siling = 9
 junzhang = 8
