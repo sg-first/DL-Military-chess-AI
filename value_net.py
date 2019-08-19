@@ -33,16 +33,21 @@ class PolicyValueNet():
                           activation="relu", kernel_regularizer=l2(self.l2_const))(probTable)
         network2 = Conv2D(filters=32, kernel_size=(3, 3), padding="same", data_format="channels_first",
                           activation="relu", kernel_regularizer=l2(self.l2_const))(network2)
-
-        network = Lambda(lambda x: K.concatenate([x[0],x[1]], axis=1), output_shape=(32,17,12))([network1,network2])
+        # 后面的设置需要斟酌
+        network1 = Conv2D(filters=4, kernel_size=(1, 1), data_format="channels_first", activation="relu",
+                           kernel_regularizer=l2(self.l2_const))(network1)
+        network1 = Conv2D(filters=2, kernel_size=(1, 1), data_format="channels_first", activation="relu",
+                           kernel_regularizer=l2(self.l2_const))(network1)
+        network2 = Conv2D(filters=4, kernel_size=(1, 1), data_format="channels_first", activation="relu",
+                          kernel_regularizer=l2(self.l2_const))(network2)
+        network2 = Conv2D(filters=2, kernel_size=(1, 1), data_format="channels_first", activation="relu",
+                          kernel_regularizer=l2(self.l2_const))(network2)
 
         # state value layers
-        value_net = Conv2D(filters=4, kernel_size=(1, 1), data_format="channels_first", activation="relu",
-                           kernel_regularizer=l2(self.l2_const))(network)
-        value_net = Conv2D(filters=2, kernel_size=(1, 1), data_format="channels_first", activation="relu",
-                           kernel_regularizer=l2(self.l2_const))(value_net)
-        value_net = Flatten()(value_net)
-        value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]), output_shape=(418,))([value_net,otherFeature]) # 考虑其它特征
+        network1 = Flatten()(network1)
+        network2 = Flatten()(network2)
+        value_net = Lambda(lambda x: K.concatenate([x[0], x[1]]), output_shape=(820,))([network1, network2])
+        value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]), output_shape=(830,))([value_net,otherFeature]) # 考虑其它特征
         value_net = Dense(32, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net)
         value_net = Dense(16, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net) # 这里原来是线性层，改成了relu
         self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
