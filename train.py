@@ -77,5 +77,6 @@ def test(modelObj, batch_size:int):
     allOtherFeature = np.array(allOtherFeature)
     allIsWin = np.array(allIsWin)
 
-    rightNum=modelObj.test(allBoard,allProbMap,allOtherFeature,allIsWin)
-    print(rightNum,'/',batch_size)
+    pos,neg=modelObj.test(allBoard,allProbMap,allOtherFeature,allIsWin)
+    print(pos, '/', batch_size / 2)
+    print(neg, '/', batch_size / 2)

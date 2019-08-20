@@ -66,13 +66,14 @@ class PolicyValueNet():
 
     def test(self,board,probMap,otherFeature,isWin):
         result=self.model.predict([board, probMap, otherFeature])
-        rightNum=0
+        posRight=0
+        negRight=0
         for i in range(len(isWin)):
             if result[i]>0.5 and isWin[i]==1:
-                rightNum+=1
+                posRight+=1
             elif result[i]<0.5 and isWin[i]==0:
-                rightNum+=1
-        return rightNum
+                negRight+=1
+        return posRight, negRight
 
 
     def get_param(self):
