@@ -8,7 +8,6 @@ from keras.optimizers import Adam
 import keras.backend as K
 import pickle
 
-
 class PolicyValueNet():
     def __init__(self, model_file=None):
         self.l2_const = 1e-4  # coef of l2 penalty
@@ -61,12 +60,19 @@ class PolicyValueNet():
 
 
     def train_step(self, board, probMap, otherFeature, isWin):  # isWin与isFirstHand一样为bool列表，表示是否胜利
-        loss = self.model.evaluate([board, probMap, otherFeature], isWin, batch_size=len(board),
-                                   verbose=0)
-        # K.set_value(self.model.optimizer.lr, learning_rate)
         # fix:目前所有胜利的局面值都为1，实际应当根据Q值更新公式给予远距离的局面一些折扣？
         self.model.fit([board, probMap, otherFeature], isWin, batch_size=len(board))
-        return loss[0]
+
+
+    def test(self,board,probMap,otherFeature,isWin):
+        result=self.model.predict([board, probMap, otherFeature])
+        rightNum=0
+        for i in range(len(isWin)):
+            if result[i]>0.5 and isWin[i]==1:
+                rightNum+=1
+            elif result[i]<0.5 and isWin[i]==0:
+                rightNum+=1
+        return rightNum
 
 
     def get_param(self):

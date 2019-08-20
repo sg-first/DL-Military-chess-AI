@@ -51,3 +51,31 @@ def train(modelObj, epoch:int, batch_size:int):
     global trainNum
     modelObj.save_model('model'+str(trainNum)+'.pkl')
     trainNum += 1
+
+def test(modelObj, batch_size:int):
+    allBoard = []
+    allProbMap = []
+    allOtherFeature = []
+    allIsWin = []
+
+    isWin = True
+    for j in range(batch_size):
+        sample = None
+        if isWin:
+            sample = random.choice(winList)
+        else:
+            sample = random.choice(loseList)
+
+        allBoard.append([sample.board])
+        allProbMap.append([sample.probMap])
+        allOtherFeature.append(sample.otherFeature)
+        allIsWin.append(int(isWin))
+        isWin = not isWin
+
+    allBoard = np.array(allBoard)
+    allProbMap = np.array(allProbMap)
+    allOtherFeature = np.array(allOtherFeature)
+    allIsWin = np.array(allIsWin)
+
+    rightNum=modelObj.test(allBoard,allProbMap,allOtherFeature,allIsWin)
+    print(rightNum,'/',batch_size)
