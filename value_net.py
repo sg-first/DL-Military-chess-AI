@@ -52,16 +52,12 @@ class PolicyValueNet():
         self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
 
         self.model = Model(inputs=[board,probTable,otherFeature], outputs=self.value_net)
-        """
-                Three loss terms：
-                loss = (z - v)^2 + pi^T * log(p) + c||theta||^2
-        """
         self.model.compile(optimizer=Adam(), loss='mean_squared_error')
 
 
-    def train_step(self, board, probMap, otherFeature, isWin):  # isWin与isFirstHand一样为bool列表，表示是否胜利
+    def train_step(self, board, probMap, otherFeature, isWin, epoch, batch_size):  # isWin与isFirstHand一样为bool列表，表示是否胜利
         # fix:目前所有胜利的局面值都为1，实际应当根据Q值更新公式给予远距离的局面一些折扣？
-        self.model.fit([board, probMap, otherFeature], isWin, batch_size=len(board))
+        self.model.fit([board, probMap, otherFeature], isWin, batch_size=batch_size, epochs=epoch)
 
 
     def test(self,board,probMap,otherFeature,isWin):

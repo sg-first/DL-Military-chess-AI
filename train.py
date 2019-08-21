@@ -22,31 +22,28 @@ class situation:
 
 
 def train(modelObj, epoch:int, batch_size:int):
-    for i in range(epoch):
-        allBoard = []
-        allProbMap = []
-        allOtherFeature = []
-        allIsWin = []
+    total_size=min(len(winList),len(loseList))
 
-        isWin = True
-        for j in range(batch_size):
-            sample = None
-            if isWin:
-                sample = random.choice(winList)
-            else:
-                sample = random.choice(loseList)
+    allBoard = []
+    allProbMap = []
+    allOtherFeature = []
+    allIsWin = []
 
-            allBoard.append([sample.board])
-            allProbMap.append([sample.probMap])
-            allOtherFeature.append(sample.otherFeature)
-            allIsWin.append(int(isWin))
-            isWin = not isWin
+    def add(sample, isWin):
+        allBoard.append([sample.board])
+        allProbMap.append([sample.probMap])
+        allOtherFeature.append(sample.otherFeature)
+        allIsWin.append(isWin)
 
-        allBoard = np.array(allBoard)
-        allProbMap = np.array(allProbMap)
-        allOtherFeature = np.array(allOtherFeature)
-        allIsWin = np.array(allIsWin)
-        modelObj.train_step(allBoard, allProbMap, allOtherFeature, allIsWin)
+    for i in range(total_size):
+        add(winList[i], 1)
+        add(loseList[i], 0)
+
+    allBoard = np.array(allBoard)
+    allProbMap = np.array(allProbMap)
+    allOtherFeature = np.array(allOtherFeature)
+    allIsWin = np.array(allIsWin)
+    modelObj.train(allBoard, allProbMap, allOtherFeature, allIsWin, batch_size, epoch)
 
     global trainNum
     modelObj.save_model('model'+str(trainNum)+'.pkl')
