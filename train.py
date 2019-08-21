@@ -43,7 +43,7 @@ def train(modelObj, epoch:int, batch_size:int):
     allProbMap = np.array(allProbMap)
     allOtherFeature = np.array(allOtherFeature)
     allIsWin = np.array(allIsWin)
-    modelObj.train(allBoard, allProbMap, allOtherFeature, allIsWin, batch_size, epoch)
+    modelObj.train(allBoard, allProbMap, allOtherFeature, allIsWin, epoch, batch_size)
 
     global trainNum
     modelObj.save_model('model'+str(trainNum)+'.pkl')
