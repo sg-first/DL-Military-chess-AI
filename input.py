@@ -1,7 +1,7 @@
 import train
 import os
 
-for root, dirs, files in os.walk(r"E:/日记"):
+for root, dirs, files in os.walk(r"D:/日记"):
     for file in files:
         f = open(os.path.join(root, file), "r")
         fr = f.read()
@@ -60,4 +60,5 @@ print(len(train.loseList))
 
 import value_net
 model=value_net.PolicyValueNet()
-train.train(model,5000,100)
+train.train(model,1000,5000)
+train.test(model,5000)
