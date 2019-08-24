@@ -14,8 +14,8 @@ class PolicyValueNet():
         self.create_net()
 
         if model_file:
-            net_params = pickle.load(open(model_file, 'rb'))
-            self.model.set_weights(net_params)
+            self.model = pickle.load(open(model_file, 'rb'))
+            # self.model.set_weights(net_params)
 
 
     def create_net(self):
