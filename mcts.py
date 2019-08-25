@@ -156,3 +156,26 @@ class MCTS:
             basic.usBeatHand = basic.handNum
 
         return (p1,p2)
+
+import configparser
+
+if __name__=="__main__":
+    cf = configparser.ConfigParser()
+    cf.read('input.ini')
+    handNum = int(cf.get('main', 'handNum'))
+    cMap = int(cf.get('main', 'cMap'))
+    probTable = int(cf.get('main', 'probTable'))
+    posList = int(cf.get('main', 'posList'))
+
+    # fix:将cMap probTable posList转换成二维数组
+
+    mctsObj=MCTS(handNum,cMap,probTable,posList)
+    result=mctsObj.get_best_move()
+    i,j=result
+
+    cf2 = configparser.ConfigParser()
+    cf2.add_section('main')
+    cf2.set('main', 'i', str(i))
+    cf2.set('main', 'j', str(j))
+    cf2.write(open('output.ini', 'w'))
+    open('finish', 'w') # 工作完成，创建文件进行提示
