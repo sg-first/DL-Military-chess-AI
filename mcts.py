@@ -81,7 +81,7 @@ class TreeNode:
                 else:
                     condition = basic.IsMyChess(i,j,self.cMap)
                 if condition:
-                    allPos=basic.getAccessibility(i,j,self.isEne)
+                    allPos=basic.getAccessibility(i,j,self.isEne,self.posList,self.cMap)
                     for newi,newj in allPos:
                         cMap, isMove, posList = simulate.simMove(self,j,i,newj,newi,self.isEne)
                         # 扩展子节点
@@ -171,11 +171,15 @@ if __name__=="__main__":
 
     mctsObj=MCTS(handNum,cMap,probTable,posList)
     result=mctsObj.get_best_move()
-    i,j=result
+    p1,p2=result
+    oldi,oldj=p1
+    newi,newj=p2
 
     cf2 = configparser.ConfigParser()
     cf2.add_section('main')
-    cf2.set('main', 'i', str(i))
-    cf2.set('main', 'j', str(j))
+    cf2.set('main', 'oldi', str(oldi))
+    cf2.set('main', 'oldj', str(oldj))
+    cf2.set('main', 'newi', str(newi))
+    cf2.set('main', 'newj', str(newj))
     cf2.write(open('output.ini', 'w'))
     open('finish', 'w') # 工作完成，创建文件进行提示
