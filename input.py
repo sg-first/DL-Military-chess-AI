@@ -40,8 +40,7 @@ def inputPos(inpos:str, start=0, splitToken='\n'):
 
 def inputRounds(temRounds:str):
     temmRounds = temRounds.split()
-    temmRounds = [int(x) for x in temmRounds]
-    return temmRounds[0]
+    return int(temmRounds[0])
 
 if __name__=='__main__':
     for root, dirs, files in os.walk(r"D:/日记"):
