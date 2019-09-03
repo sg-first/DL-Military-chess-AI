@@ -4,7 +4,7 @@ import os
 def inputMap(inmap:str, start=0, isFirst=True, splitToken='\n'):        # 读入棋盘
     inmap = inmap.split(splitToken)
     end = start + 12
-    temmap = [[0 for i in range(5)] for i in range(12)]
+    temmap = [[0 for _ in range(5)] for _ in range(12)]
     for i in range(start,end):
         if(isFirst==True):
             temmap1 = inmap[i].split()
@@ -21,7 +21,7 @@ def inputMap(inmap:str, start=0, isFirst=True, splitToken='\n'):        # 读入
 def inputProb(inprob:str, start=0, splitToken='\n'):
     inprob = inprob.split(splitToken)
     end = start + 25
-    temProb = [[0 for i in range(12)] for i in range(25)]
+    temProb = [[0 for _ in range(12)] for _ in range(25)]
     for i in range(start, end):
         temProb1 = inprob[i].split()
         temProb1 = [float(x) for x in temProb1]
@@ -31,7 +31,7 @@ def inputProb(inprob:str, start=0, splitToken='\n'):
 def inputPos(inpos:str, start=0, splitToken='\n'):
     inpos = inpos.split(splitToken)
     end = start + 25
-    temPos = [[0 for i in range(2)] for i in range(25)]
+    temPos = [[0 for _ in range(2)] for _ in range(25)]
     for i in range(start, end):
         temPos1 = inpos[i].split()
         temPos1 = [int(x) for x in temPos1]
@@ -48,11 +48,11 @@ if __name__=='__main__':
             f = open(os.path.join(root, file), "r")
             fr = f.read()
             diary = fr.split("@")
-            outdiary = [[0 for i in range(6)] for i in range(len(diary) - 1)]
-            chessMap = [[0 for i in range(5)] for i in range(12)]
-            chessProb = [[0 for i in range(12)] for i in range(25)]
-            chessPos = [[0 for i in range(2)] for i in range(25)]
-            chessOther = [0 for i in range(10)]
+            outdiary = [[0 for _ in range(6)] for i in range(len(diary) - 1)]
+            chessMap = [[0 for _ in range(5)] for i in range(12)]
+            chessProb = [[0 for _ in range(12)] for i in range(25)]
+            chessPos = [[0 for _ in range(2)] for i in range(25)]
+            chessOther = [0 for _ in range(10)]
             tempwinorlose = diary[len(diary) - 1].split()
             tempwinorlose = [int(x) for x in tempwinorlose]
             winorlose = bool(tempwinorlose[0])

@@ -7,6 +7,7 @@ from keras.regularizers import l2
 from keras.optimizers import Adam
 import keras.backend as K
 import pickle
+import numpy as np
 
 class PolicyValueNet():
     def __init__(self, model_file=None):
@@ -59,8 +60,14 @@ class PolicyValueNet():
         # fix:目前所有胜利的局面值都为1，实际应当根据Q值更新公式给予远距离的局面一些折扣？
         self.model.fit([board, probMap, otherFeature], isWin, batch_size=batch_size, epochs=epoch)
 
+    def predict(self, board, probMap, rounds, myChessNum, eneChessNum, estResult): # 预测的是一个
+        otherFeature=[rounds,myChessNum,eneChessNum]+list(estResult)
+        otherFeature=np.array([otherFeature])
+        board=np.array([board])
+        probMap=np.array([probMap])
+        return self.model.predict([board,probMap,otherFeature])[0]
 
-    def test(self,board,probMap,otherFeature,isWin):
+    def test(self,board,probMap,otherFeature,isWin): # 应该直接在fit时用交叉验证，不用这个
         result=self.model.predict([board, probMap, otherFeature])
         posRight=0
         negRight=0
@@ -71,11 +78,9 @@ class PolicyValueNet():
                 negRight+=1
         return posRight, negRight
 
-
     def get_param(self):
         net_params = self.model.get_weights()
         return net_params
-
 
     def save_model(self, model_file):
         pickle.dump(self.model, open(model_file, 'wb'), protocol=2)

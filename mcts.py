@@ -3,8 +3,9 @@ import basic
 import simulate
 import playout
 import asses
+import value_net
 
-value_fn = None # 神经网络估值函数
+model = value_net.PolicyValueNet('model0.pkl')
 epoch = 0
 n_epoch = 10000 # 总训练轮次（超参数）
 n_playout = 10000 # 模拟次数（超参数）
@@ -28,9 +29,11 @@ class TreeNode:
         self._n_visits = 1  # 快速走棋次数
 
         # 不管是我方还是敌方，胜率都是以我方为标准，但是选择的时候敌方的层选min
-        cMapValue = asses.valueEstimation(cMap,self)
+        # fix: 计算敌方棋子数（eneChessNum）和我方棋子数（myChessNum）
+        estResult = asses.valueEstimation(cMap,self) # 局面评估七项
         # fix: 还需要其它参数
-        self.nnQ = value_fn(self.cMap,self.probTable,cMapValue) # 神经网络胜率，构造时立即预测
+        self.nnQ = model.predict(self.cMap, self.probTable, basic.handNum+self.layer, myChessNum, eneChessNum,
+                            estResult) # 神经网络胜率，构造时立即预测
         self.qcQ = 0 # 快速走棋胜率
         self.qcScore = 0 # 快速走棋得分
 

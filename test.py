@@ -1,14 +1,8 @@
-import numpy as np
-import keras.backend as K
+import value_net
 
-m1=np.random.randint(0,2,(2,5,12))
-m2=np.random.randint(0,100,(2,7,12))
-
-print(m1)
-print(m2)
-
-a = K.variable(m1)
-b = K.variable(m2)
-c1 = K.concatenate([a,b], axis=1)
-
-print(K.eval(c1).shape)
+model=value_net.PolicyValueNet('model0.pkl')
+cmap = [[0 for _ in range(5)] for _ in range(12)]
+probTable = [[0 for _ in range(12)] for _ in range(25)]
+posList = [[0 for _ in range(2)] for _ in range(25)]
+round=0
+model.predict(cmap,probTable,)

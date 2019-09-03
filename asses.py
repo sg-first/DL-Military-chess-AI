@@ -184,4 +184,4 @@ def valueEstimation(cMap,node):
                 ff4 += valuelast3line(i, j,cMap)
                 ff5 += valueNear(i, j,cMap,node)
                 ff6 += valuecrosshill(i)
-    return (ff1,ff2,ff3,ff4,ff5,ff6,ff7,ff1+ff2+ff3+ff4+ff5+ff6+ff7)
+    return (ff1,ff2,ff3,ff4,ff5,ff6,ff7)
