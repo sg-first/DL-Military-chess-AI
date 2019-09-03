@@ -5,13 +5,16 @@ trainNum = 0
 winList = []
 loseList = []
 
+def makeCompleteProbMap(probMap,posList):
+    for i in range(25):
+        probMap[i].append(posList[i][0]) # 会改变原来的probMap
+        probMap[i].append(posList[i][1])
+    return probMap
+
 class situation:
     def __init__(self, board:list, probMap:list, posList:list, otherFeature:list, isWin:bool):
         self.board = np.array(board)
-        for i in range(25):
-            probMap[i].append(posList[i][0])
-            probMap[i].append(posList[i][1])
-        self.probMap = np.array(probMap)
+        self.probMap = np.array(makeCompleteProbMap(probMap,posList))
         self.probMap = self.probMap.T
         self.otherFeature = np.array(otherFeature)
 

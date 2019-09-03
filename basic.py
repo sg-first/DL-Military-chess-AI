@@ -305,7 +305,8 @@ def getAccessibility(i, j, isEne, posList, cMap):
 
 
 def caluChessNum(cMap):
-    usNum = 0, eneNum = 0
+    usNum = 0
+    eneNum = 0
     for i in range(12): # 计算敌方、我方棋子数
         for j in range(5):
             if IsMyChess(i, j, cMap):

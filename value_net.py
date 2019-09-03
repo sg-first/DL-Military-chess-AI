@@ -63,8 +63,9 @@ class PolicyValueNet():
     def predict(self, board, probMap, rounds, myChessNum, eneChessNum, estResult): # 预测的是一个
         otherFeature=[rounds,myChessNum,eneChessNum]+list(estResult)
         otherFeature=np.array([otherFeature])
-        board=np.array([board])
-        probMap=np.array([probMap])
+        board=np.array([[board]])
+        probMap=np.array(probMap).T # 先得到正确形式
+        probMap=np.array([[probMap]]) # 后包两层
         return self.model.predict([board,probMap,otherFeature])[0]
 
     def test(self,board,probMap,otherFeature,isWin): # 应该直接在fit时用交叉验证，不用这个

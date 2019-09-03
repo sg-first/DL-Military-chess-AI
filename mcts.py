@@ -1,9 +1,11 @@
-import math
+import help
 import basic
 import simulate
 import playout
 import asses
 import value_net
+import train
+import math
 
 model = value_net.PolicyValueNet('model0.pkl')
 epoch = 0
@@ -11,9 +13,6 @@ n_epoch = 10000 # 总训练轮次（超参数）
 n_playout = 10000 # 模拟次数（超参数）
 
 _n_qc = 1 # 快速走棋总次数，用于UCB公式计算（每手更新）
-
-def ln(x):
-    return math.log(x,math.e)
 
 class TreeNode:
     def __init__(self, isEne:bool, cMap:list, probTable:list, posList:list, layer = 0, move = None, parent = None):
@@ -29,10 +28,11 @@ class TreeNode:
         self._n_visits = 1  # 快速走棋次数
 
         # 不管是我方还是敌方，胜率都是以我方为标准，但是选择的时候敌方的层选min
+        probMap = help.copy2DList(probTable)
+        probMap = train.makeCompleteProbMap(probMap, posList)
         myChessNum, eneChessNum=basic.caluChessNum(self.cMap) # 我方、敌方棋子数
         estResult = asses.valueEstimation(cMap,self) # 局面评估七项
-        # fix: 还需要其它参数
-        self.nnQ = model.predict(self.cMap, self.probTable, basic.handNum+self.layer, myChessNum, eneChessNum,
+        self.nnQ = model.predict(self.cMap, probMap, basic.handNum+self.layer, myChessNum, eneChessNum,
                             estResult) # 神经网络胜率，构造时立即预测
         self.qcQ = 0 # 快速走棋胜率
         self.qcScore = 0 # 快速走棋得分
@@ -73,7 +73,7 @@ class TreeNode:
         """计算并返回此节点的加权Q值
         """
         nnPar = epoch/n_epoch
-        weightingQcQ = self.qcQ + math.sqrt((2*ln(_n_qc)/self._n_visits)) # UCB选取
+        weightingQcQ = self.qcQ + math.sqrt((2*help.ln(_n_qc)/self._n_visits)) # UCB选取
         return nnPar*self.nnQ + (1-nnPar)*weightingQcQ # 与神经网络Q加权
 
     def extend(self):
