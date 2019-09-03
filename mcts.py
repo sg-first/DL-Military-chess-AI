@@ -163,11 +163,14 @@ if __name__=="__main__":
     cf = configparser.ConfigParser()
     cf.read('input.ini')
     handNum = int(cf.get('main', 'handNum'))
-    cMap = int(cf.get('main', 'cMap'))
-    probTable = int(cf.get('main', 'probTable'))
-    posList = int(cf.get('main', 'posList'))
+    cMap = cf.get('main', 'cMap')
+    probTable = cf.get('main', 'probTable')
+    posList = cf.get('main', 'posList')
 
-    # fix:将cMap probTable posList转换成二维数组
+    import input
+    cMap=input.inputMap(cMap,splitToken='-n')
+    probTable=input.inputProb(probTable,splitToken='-n')
+    posList=input.inputPos(posList,splitToken='-n')
 
     mctsObj=MCTS(handNum,cMap,probTable,posList)
     result=mctsObj.get_best_move()
