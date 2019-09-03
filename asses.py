@@ -34,7 +34,7 @@ def codeToStrength2(type):#19.8.5 update
         return 30
 
 def getChessStrength(chess,node): # 棋子死亡作为参数传进来？finish
-    if isDie(chess,node.posList):
+    if eneSta.isDie(chess,node.posList):
         return 0
     else:
         score = 0
