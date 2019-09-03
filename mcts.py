@@ -29,7 +29,7 @@ class TreeNode:
         self._n_visits = 1  # 快速走棋次数
 
         # 不管是我方还是敌方，胜率都是以我方为标准，但是选择的时候敌方的层选min
-        # fix: 计算敌方棋子数（eneChessNum）和我方棋子数（myChessNum）
+        myChessNum, eneChessNum=basic.caluChessNum(self.cMap) # 我方、敌方棋子数
         estResult = asses.valueEstimation(cMap,self) # 局面评估七项
         # fix: 还需要其它参数
         self.nnQ = model.predict(self.cMap, self.probTable, basic.handNum+self.layer, myChessNum, eneChessNum,

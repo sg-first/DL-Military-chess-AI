@@ -304,6 +304,17 @@ def getAccessibility(i, j, isEne, posList, cMap):
     return result
 
 
+def caluChessNum(cMap):
+    usNum = 0, eneNum = 0
+    for i in range(12): # 计算敌方、我方棋子数
+        for j in range(5):
+            if IsMyChess(i, j, cMap):
+                usNum += 1
+            if IsEneChess(i, j, cMap):
+                eneNum += 1
+    return (usNum, eneNum)
+
+
 # 概率表棋子对应下标
 siling = 9
 junzhang = 8
