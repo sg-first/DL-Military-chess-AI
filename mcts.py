@@ -170,10 +170,10 @@ if __name__=="__main__":
     probTable = cf.get('main', 'probTable')
     posList = cf.get('main', 'posList')
 
-    import input
-    cMap=input.inputMap(cMap,splitToken='-n')
-    probTable=input.inputProb(probTable,splitToken='-n')
-    posList=input.inputPos(posList,splitToken='-n')
+    import inputHelp
+    cMap = inputHelp.inputMap(cMap, splitToken='-n')
+    probTable = inputHelp.inputProb(probTable, splitToken='-n')
+    posList = inputHelp.inputPos(posList, splitToken='-n')
 
     mctsObj=MCTS(handNum,cMap,probTable,posList)
     result=mctsObj.get_best_move()
