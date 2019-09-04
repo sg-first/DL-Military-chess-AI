@@ -33,27 +33,27 @@ def codeToStrength2(type):#19.8.5 update
     if (type == basic.siling):
         return 30
 
-def getChessStrength(chess,node): # 棋子死亡作为参数传进来？finish
+def getChessStrength(chess,node):
     if eneSta.isDie(chess,node.posList):
         return 0
     else:
         score = 0
-        for i in range(len(node.probTable)):
+        for i in range(len(node.probTable[chess])):
             weight=codeToStrength(i)
-            score+=weight*node.probTable[i]
+            score+=weight*node.probTable[chess][i]
 
-def isDetermine(node): # finish
+def isDetermine(node, chess):
     type=-1
-    for i in range(len(node.probTable)):
-        if type==-1 and not(node.probTable[i]==0) :
+    for i in range(len(node.probTable[chess])):
+        if type==-1 and not(node.probTable[chess][i]==0) :
             type = i
-        if not(type==-1) and not(node.probTable[i]==0):
+        if not(type==-1) and not(node.probTable[chess][i]==0):
             return -1
     return type
 
 def ChessComparisons(myc,enc,node):#finish
     mytype=codeToType(myc)
-    encType=isDetermine(enc)
+    encType=isDetermine(node, enc)
     # 涉及工兵地雷的特判
     if(mytype==1): # if mytype==gongbing
         if encType==1 or encType == 11:#(encType == gongbing or encType == zhadan)
@@ -73,13 +73,13 @@ def ChessComparisons(myc,enc,node):#finish
     if mytype==11 or encType==11:
         return 2
     else:
-        myStrength=codeToStrength(mytype)
-        enemyStrength=getChessStrength(enc,node)
-        if myStrength<enemyStrength:
+        myStrength = codeToStrength(mytype)
+        enemyStrength = getChessStrength(enc, node)
+        if myStrength < enemyStrength:
             return 0
         elif myStrength > enemyStrength:
             return 1
-        else :
+        else:
             return 2
 
 def codeToType(code):#finish
@@ -154,7 +154,7 @@ def valueNear(i,j,cMap,node):
         if not(cMap[i2][j2]==0):
 
             if cMap[i2][j2]==13:
-                s=getChessStrength(eneSta.findChess(j2,i2,node.posList),node)
+                s = getChessStrength(eneSta.findChess(j2, i2, node.posList), node)
                 if s>eneMax:
                     eneMax=s
             else:
