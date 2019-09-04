@@ -26,7 +26,7 @@ def IsEneChess(i, j, cMap):
 
 
 # i,j位置是否本方可移动的棋子
-def IsMyMovingChess(i, j, cMap):
+def IsMyMovingChess(i, j, posList, cMap):
     if cMap[i][j] >= 1 and cMap[i][j] <= 9 or cMap[i][j] == 11:  # warning :crossline?
         return 1
     else:
