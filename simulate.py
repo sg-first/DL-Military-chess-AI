@@ -1,4 +1,5 @@
 import eneSta
+import asses
 
 def simMove(node,x1,y1,x2,y2,isEne):
     cMap = node.cMap[:]

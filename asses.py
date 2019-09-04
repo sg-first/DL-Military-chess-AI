@@ -41,6 +41,7 @@ def getChessStrength(chess,node):
         for i in range(len(node.probTable[chess])):
             weight=codeToStrength(i)
             score+=weight*node.probTable[chess][i]
+        return score/sum(node.probTable[chess])
 
 def isDetermine(node, chess):
     type=-1
@@ -151,8 +152,7 @@ def valueNear(i,j,cMap,node):
     friMax=0
     for p in allPos:
         i2,j2=p
-        if not(cMap[i2][j2]==0):
-
+        if not cMap[i2][j2]==0:
             if cMap[i2][j2]==13:
                 s = getChessStrength(eneSta.findChess(j2, i2, node.posList), node)
                 if s>eneMax:
@@ -160,7 +160,7 @@ def valueNear(i,j,cMap,node):
             else:
                 s=codeToStrength2(codeToType(cMap[i2][j2]))
                 if s>friMax:
-                    friMax=s    
+                    friMax=s
     value=0
     myStrength=codeToStrength2(codeToType(cMap[i][j]))
     if(eneMax>=myStrength):

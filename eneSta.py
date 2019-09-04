@@ -1,6 +1,6 @@
 def findChess(x,y,posList):
     sub = 0
-    for xi,yi in posList:
+    for yi,xi in posList:
         if x==xi and y==yi:
             return sub
         else:
