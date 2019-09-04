@@ -113,7 +113,6 @@ class MCTS:
     """An implementation of Monte Carlo Tree Search."""
 
     def __init__(self, handNum, cMap, probTable, posList):
-        self.root = TreeNode(False, cMap, probTable, posList)
         # 统计双方棋子数
         usNum = 0
         eneNum = 0
@@ -135,11 +134,13 @@ class MCTS:
             basic.eneBeatHand = handNum - 1
         if eneNum != lastEneNum:
             lastEneNum = eneNum
-            basic.eneBeatHand = handNum - 1
+            basic.usBeatHand = handNum - 1
         # 调整其它变量
         global _n_qc
         _n_qc = 1
         basic.handNum = handNum
+        # 环境初始化完毕，创建根节点
+        self.root = TreeNode(False, cMap, probTable, posList)
 
     def simulation(self): # 调用一次是一次模拟，为了获取更好的快速走棋评分
         node = self.root
@@ -155,8 +156,6 @@ class MCTS:
             self.simulation()
 
         p1,p2,isMove = self.root.select().move
-        if not isMove: # 如果是吃子，记录我方吃子手数
-            basic.usBeatHand = basic.handNum
 
         return (p1,p2)
 
