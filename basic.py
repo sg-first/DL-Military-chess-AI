@@ -173,7 +173,7 @@ def IsEneMovingChess(i, j, posList, cMap):
 def getAccessibility(i, j, isEne, posList, cMap):
     result = []
     if isEne:
-        isMovingChess = IsEneMovingChess  # fix:这个函数没翻译，还要翻译
+        isMovingChess = IsEneMovingChess
         isChess = IsEneChess
         isInvChess = IsMyChess
     else:

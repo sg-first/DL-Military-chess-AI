@@ -5,21 +5,13 @@ def tableToStr(table):
     s = s[1:len(s)-1] # 外层[]截掉
     s = s.replace('[','')
     s = s.replace(' ','')
-    s = s.replace('],','-n')
+    s = s.replace('],','nr')
     s = s.replace(']', '')
-    return s
-
-def tableToStr2(table):
-    s = str(table)
-    s = s[1:len(s)-1] # 外层[]截掉
-    s = s.replace('(','')
-    s = s.replace(' ','')
-    s = s.replace('),','-n')
-    s = s.replace(')', '')
     return s
 
 def writeLine(msg,p):
     p.stdin.write((msg+'\r\n').encode())
+    print(msg+'\r')
     p.stdin.flush()
 
 def _playout(node):
@@ -28,7 +20,7 @@ def _playout(node):
     writeLine(str(node.isEne),p)
     writeLine(tableToStr(node.cMap),p)
     writeLine(tableToStr(node.probTable),p)
-    writeLine(tableToStr2(node.posList),p)
+    writeLine(tableToStr(node.posList),p)
     # 发送局面后接收结果即可
     while True:
         line = p.stdout.readline() # 返回的是GO 坐标坐标

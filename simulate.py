@@ -1,9 +1,10 @@
 import eneSta
 import asses
+import help
 
 def simMove(node,x1,y1,x2,y2,isEne):
-    cMap = node.cMap[:]
-    posList = node.posList[:]
+    cMap = help.copy2DList(node.cMap)
+    posList = help.copy2DList(node.posList)
 
     if(cMap[y2][x2]==0):
         if(isEne):
