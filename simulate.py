@@ -10,7 +10,7 @@ def simMove(node,x1,y1,x2,y2,isEne):
     if(cMap[y2][x2]==0):
         if isEne:
             enemyChess=eneSta.findChess(x1,y1,posList)
-            posList[enemyChess] = (y2,x2)
+            posList[enemyChess] = [y2,x2]
         cMap[y2][x2]=cMap[y1][x1]
         cMap[y1][x1]=0
         return cMap, True, posList
@@ -23,7 +23,7 @@ def simMove(node,x1,y1,x2,y2,isEne):
         if result==0: # 实际的敌方胜
             if isEne:
                 enemyChess=eneSta.findChess(x1,y1,posList)
-                posList[enemyChess] = (y2,x2)
+                posList[enemyChess] = [y2,x2]
                 cMap[y2][x2]=cMap[y1][x1]
                 cMap[y1][x1]=0
             else:

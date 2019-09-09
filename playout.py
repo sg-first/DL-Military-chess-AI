@@ -27,9 +27,10 @@ def _playout(node):
         line = line.decode()
         print('line',line)
         if line[0]=='G':
-            print('OK')
-            oldPos = (int(line[3]),int(line[4])) # 这里坐标都是ij形
-            newPos = (int(line[5]),int(line[6]))
+            line=line[1:len(line)-2] # 截掉前面G和后面换行符
+            resultList=line.split(',')
+            oldPos = (int(resultList[0]),int(resultList[1])) # 这里坐标都是ij形
+            newPos = (int(resultList[2]),int(resultList[3]))
             for i in node.children:
                 oldi, newi, _ = i.move
                 if oldPos==oldi and newPos==newi:
