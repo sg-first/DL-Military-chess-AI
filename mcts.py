@@ -8,9 +8,11 @@ import train
 import math
 
 model = value_net.PolicyValueNet('model0.pkl')
-epoch = 0
-n_epoch = 10000 # 总训练轮次（超参数）
+epoch = 1000 # 目前训练伦次
+n_epoch = 2500 # 期待训练轮次（超参数）
 n_playout = 10000 # 模拟次数（超参数）
+
+openMCTS=True
 
 _n_qc = 1 # 快速走棋总次数，用于UCB公式计算（每手更新）
 
@@ -37,12 +39,12 @@ class TreeNode:
         self.qcQ = 0 # 快速走棋胜率
         self.qcScore = 0 # 快速走棋得分
 
-    def select(self):
+    def select(self,useUCB=True):
         def s():
             if self.isEne:
-                return min(self.children, lambda x: x.get_value())
+                return min(self.children, lambda x: x.get_value(useUCB))
             else:
-                return max(self.children, lambda x: x.get_value())
+                return max(self.children, lambda x: x.get_value(useUCB))
 
         if self.is_leaf():
             end, isWin = basic.game_end(self) # 检查游戏是否结束
@@ -69,12 +71,16 @@ class TreeNode:
             self.parent.update_recursive(isWin)
         self.update(isWin)
 
-    def get_value(self):
-        """计算并返回此节点的加权Q值
+    def get_value(self, useUCB=True):
+        """计算并返回此节点的加权Q值，用于指导下一步扩展或直接给出最优落子
         """
         nnPar = epoch/n_epoch
-        weightingQcQ = self.qcQ + math.sqrt((2*help.ln(_n_qc)/self._n_visits)) # UCB选取
+        if useUCB:
+            weightingQcQ = self.qcQ + math.sqrt((2*help.ln(_n_qc)/self._n_visits)) # UCB选取
+        else:
+            weightingQcQ = self.qcQ
         return nnPar*self.nnQ + (1-nnPar)*weightingQcQ # 与神经网络Q加权
+        # （通过调参可实现只用MSTC不考虑神经网络，反之应当直接设openMCTS=False）
 
     def extend(self):
         print('extend:')
@@ -107,8 +113,10 @@ class TreeNode:
             end, isWin = basic.game_end(self) # 检查游戏是否结束
             if not end:
                 self.extend()
+
                 import numpy as np
                 print(np.array(self.cMap))
+
                 playout._playout(self).playout()  # playout._playout(self)最后一步要把走法转换为self对应的子节点（然后递归调用）
             else:
                 self.update_recursive(isWin) # 递归更新快速走棋评分
@@ -158,14 +166,17 @@ class MCTS:
             if node._n_visits == 1: # 没有进行过快速走棋（没有看过）
                 if not (epoch>(n_epoch*3/4) and (node.nnQ>0.7 or node.nnQ<0.3)): # 不满足无快速走棋选择条件
                    node.playout() # 使用快速走棋走到结束
-            node = node.select()
+            node = node.select() # 模拟走棋的扩展需开启UCB给探索提供更多可能性
 
     def get_best_move(self):
-        # 开始模拟
-        for _ in range(n_playout):
-            self.simulation()
+        if openMCTS:
+            # 开始模拟
+            for _ in range(n_playout):
+                self.simulation() # 这里面会根据情况进行扩展
+        else:
+            self.root.extend() # 不模拟直接用神经网络评分，所以直接在这里给根节点扩展一次即可
 
-        p1,p2,isMove = self.root.select().move
+        p1,p2,isMove = self.root.select(False).move # 最终求结果的扩展不开启UCB，得到目前信息下的最近似结果
 
         return (p1,p2)
 
