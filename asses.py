@@ -154,7 +154,6 @@ def valueNear(i,j,cMap,node):
         i2, j2 = p
         if not cMap[i2][j2] == 0:
             if cMap[i2][j2] == 13:
-                print('sim move chess:',i2,j2, cMap[i2][j2])
                 s = getChessStrength(eneSta.findChess(j2, i2, node.posList), node)
                 if s > eneMax:
                     eneMax = s

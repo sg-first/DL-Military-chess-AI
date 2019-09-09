@@ -3,7 +3,6 @@ import asses
 import help
 
 def simMove(node,x1,y1,x2,y2,isEne):
-    print('layer:', node.layer)
     cMap = help.copy2DList(node.cMap)
     posList = help.copy2DList(node.posList)
 

@@ -77,6 +77,10 @@ class TreeNode:
         return nnPar*self.nnQ + (1-nnPar)*weightingQcQ # 与神经网络Q加权
 
     def extend(self):
+        print('extend:')
+        import numpy as np
+        print(np.array(self.cMap))
+
         for i in range(12):
             for j in range(5):
                 if self.isEne:
@@ -85,6 +89,7 @@ class TreeNode:
                     condition = basic.IsMyChess(i,j,self.cMap)
                 if condition:
                     allPos=basic.getAccessibility(i,j,self.isEne,self.posList,self.cMap)
+                    print('layer:', self.layer)
                     for newi,newj in allPos:
                         print('move:',j,i,newj,newi)
                         print('棋子1:',self.cMap[i][j])
@@ -102,7 +107,9 @@ class TreeNode:
             end, isWin = basic.game_end(self) # 检查游戏是否结束
             if not end:
                 self.extend()
-                playout._playout(self).playout()  # playout._playout(self)最后一步要把走法转换为self对应的子节点
+                import numpy as np
+                print(np.array(self.cMap))
+                playout._playout(self).playout()  # playout._playout(self)最后一步要把走法转换为self对应的子节点（然后递归调用）
             else:
                 self.update_recursive(isWin) # 递归更新快速走棋评分
         else:
