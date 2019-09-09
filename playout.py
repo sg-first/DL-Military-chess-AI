@@ -25,12 +25,15 @@ def _playout(node):
     while True:
         line = p.stdout.readline() # 返回的是GO 坐标坐标
         line = line.decode()
+        print('line',line)
         if line[0]=='G':
-            oldPos = (int(line[3]),int(line[4]))
-            newPos = (int(line[5]),int(line[6]))
-            for i in node.childern:
+            print('OK')
+            oldPos = (int(line[4]),int(line[3]))
+            newPos = (int(line[6]),int(line[5]))
+            for i in node.children:
                 oldi, newi, _ = i.move
                 if oldPos==oldi and newPos==newi:
+                    print('find')
                     p.terminate()
                     return i
             p.terminate()
