@@ -151,16 +151,17 @@ def valueNear(i,j,cMap,node):
     eneMax=0
     friMax=0
     for p in allPos:
-        i2,j2=p
-        if not cMap[i2][j2]==0:
-            if cMap[i2][j2]==13:
+        i2, j2 = p
+        if not cMap[i2][j2] == 0:
+            if cMap[i2][j2] == 13:
+                print('sim move chess:',i2,j2, cMap[i2][j2])
                 s = getChessStrength(eneSta.findChess(j2, i2, node.posList), node)
-                if s>eneMax:
-                    eneMax=s
+                if s > eneMax:
+                    eneMax = s
             else:
-                s=codeToStrength2(codeToType(cMap[i2][j2]))
-                if s>friMax:
-                    friMax=s
+                s = codeToStrength2(codeToType(cMap[i2][j2]))
+                if s > friMax:
+                    friMax = s
     value=0
     myStrength=codeToStrength2(codeToType(cMap[i][j]))
     if(eneMax>=myStrength):

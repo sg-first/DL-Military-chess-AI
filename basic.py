@@ -171,8 +171,6 @@ def IsEneMovingChess(i, j, posList, cMap):
 
 
 def getAccessibility(i, j, isEne, posList, cMap):
-    import numpy as np
-    print(np.array(cMap))
     result = []
     if isEne:
         isMovingChess = IsEneMovingChess
@@ -196,11 +194,10 @@ def getAccessibility(i, j, isEne, posList, cMap):
             while (y2 > 0 and y2 < 11 and IsVerticalRailway(y2, x2) and IsVerticalRailway(y2 - 1, j) and not (
                 IsAfterHill(y2, j)) and not (isChess(y2 - 1, j, cMap)) and not (IsFilledCamp(y2 - 1, j, cMap))):
                 y2 = i - k
-                k = k + 1
+                k += 1
                 result.append((y2, x2))
                 if isInvChess(y2, x2, cMap):  # 当前位置已经是敌方棋子，不能再前进
                     break
-                k+=1
 
         y2 = i
         x2 = j
@@ -212,11 +209,10 @@ def getAccessibility(i, j, isEne, posList, cMap):
             k=1
             while x2 > 0 and IsAcrossRailway(i) and not (isChess(i, x2 - 1, cMap)) and not (IsFilledCamp(i, x2 - 1, cMap)):
                 x2 = j - k
-                k = k + 1
+                k += 1
                 result.append((y2, x2))
                 if isInvChess(y2, x2, cMap):
                     break
-                k+=1
 
         y2 = i
         x2 = j
@@ -227,13 +223,12 @@ def getAccessibility(i, j, isEne, posList, cMap):
         else:
             k=1
             while x2 < 4 and IsAcrossRailway(i) and not (isChess(i, x2 + 1, cMap)) and not (IsFilledCamp(i, x2 + 1, cMap)):
-                k = k + 1
+                # k = k + 1
                 x2 = j + k
+                k += 1
                 result.append((y2, x2))
                 if isInvChess(y2, x2, cMap):
                     break
-                k+=1
-
 
         y2 = i
         x2 = j

@@ -28,12 +28,11 @@ def _playout(node):
         print('line',line)
         if line[0]=='G':
             print('OK')
-            oldPos = (int(line[4]),int(line[3]))
-            newPos = (int(line[6]),int(line[5]))
+            oldPos = (int(line[3]),int(line[4])) # 这里坐标都是ij形
+            newPos = (int(line[5]),int(line[6]))
             for i in node.children:
                 oldi, newi, _ = i.move
                 if oldPos==oldi and newPos==newi:
-                    print('find')
                     p.terminate()
                     return i
             p.terminate()
