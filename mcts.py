@@ -86,6 +86,9 @@ class TreeNode:
                 if condition:
                     allPos=basic.getAccessibility(i,j,self.isEne,self.posList,self.cMap)
                     for newi,newj in allPos:
+                        print('move:',j,i,newj,newi)
+                        print('棋子1:',self.cMap[i][j])
+                        print('棋子2:',self.cMap[newi][newj])
                         cMap, isMove, posList = simulate.simMove(self,j,i,newj,newi,self.isEne)
                         # 扩展子节点
                         self.children.append(TreeNode(not self.isEne, cMap, self.probTable, posList, self.layer+1,

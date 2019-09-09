@@ -171,6 +171,8 @@ def IsEneMovingChess(i, j, posList, cMap):
 
 
 def getAccessibility(i, j, isEne, posList, cMap):
+    import numpy as np
+    print(np.array(cMap))
     result = []
     if isEne:
         isMovingChess = IsEneMovingChess

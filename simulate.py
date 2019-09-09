@@ -15,6 +15,7 @@ def simMove(node,x1,y1,x2,y2,isEne):
         return cMap,True,posList
     else:
         if isEne==False:
+            print('layer:',node.layer)
             result=asses.ChessComparisons(cMap[y1][x1],eneSta.findChess(x2,y2,node.posList),node)
         else:
             result=asses.ChessComparisons(cMap[y2][x2],eneSta.findChess(x1,y1,node.posList),node)
