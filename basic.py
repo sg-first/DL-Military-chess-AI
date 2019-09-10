@@ -186,11 +186,11 @@ def getAccessibility(i, j, isEne, posList, cMap):
         x2 = j
         # 可以前移:不在第一行,不在山界后,前方不是己方棋子,前方不是有棋子占领的行营
         if (i > 0 and not (IsVerticalRailway(i, j)) and not (IsAfterHill(i, j)) and not (isChess(i - 1, j, cMap))
-                and not (IsFilledCamp(i - 1, j, cMap))):
+                and not (IsFilledCamp(i - 1, j, cMap))):#不是铁路的前进方式
             y2 = i - 1
             result.append((y2, x2))
         else:
-            k=1
+            k=1#是铁路的前进方式
             while (y2 > 0 and y2 < 11 and IsVerticalRailway(y2, x2) and IsVerticalRailway(y2 - 1, j) and not (
                 IsAfterHill(y2, j)) and not (isChess(y2 - 1, j, cMap)) and not (IsFilledCamp(y2 - 1, j, cMap))):
                 y2 = i - k
@@ -243,7 +243,9 @@ def getAccessibility(i, j, isEne, posList, cMap):
                 and not (IsBeforeHill(y2, j)) and not (isChess(y2 + 1, j, cMap)) and not (IsFilledCamp(y2 + 1, j, cMap))):
                 y2 = i + k
                 result.append((y2, x2))
-                k+=1
+                k += 1
+                if isInvChess(y2, x2, cMap):# 当前位置已经是敌方棋子，不能再前进
+                    break
 
         # 后面不用更新x2 y2的值了，因为都是现场计算的
         # 可以左上进行营:左上不是被占用的行营且它是行营
