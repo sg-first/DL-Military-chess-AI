@@ -25,6 +25,8 @@ class situation:
 
 
 def train(modelObj, epoch:int, batch_size:int):
+    random.shuffle(winList)
+    random.shuffle(loseList)
     total_size=min(len(winList),len(loseList))
 
     allBoard = []
@@ -60,7 +62,6 @@ def test(modelObj, batch_size:int):
 
     isWin = True
     for j in range(batch_size):
-        sample = None
         if isWin:
             sample = random.choice(winList)
         else:
