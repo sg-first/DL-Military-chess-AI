@@ -42,9 +42,9 @@ class TreeNode:
     def select(self,useUCB=True):
         def s():
             if self.isEne:
-                return min(self.children, lambda x: x.get_value(useUCB))
+                return min(self.children, key=lambda x: x.getValue(useUCB))
             else:
-                return max(self.children, lambda x: x.get_value(useUCB))
+                return max(self.children, key=lambda x: x.getValue(useUCB))
 
         if self.is_leaf():
             end, isWin = basic.game_end(self) # 检查游戏是否结束
