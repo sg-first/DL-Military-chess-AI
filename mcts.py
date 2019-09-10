@@ -71,7 +71,7 @@ class TreeNode:
             self.parent.update_recursive(isWin)
         self.update(isWin)
 
-    def get_value(self, useUCB=True):
+    def getValue(self, useUCB=True):
         """计算并返回此节点的加权Q值，用于指导下一步扩展或直接给出最优落子
         """
         nnPar = epoch/n_epoch
