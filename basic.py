@@ -376,11 +376,10 @@ def game_end(node):
         return True, True  # 未找到敌方军棋，敌方输
 
     handNum_i = handNum + node.layer  # 目前总手数
-    moveNum = handNum_i - max(eneBeatHand, usBeatHand)  # 目前已有多少步未吃子
+    moveNum = handNum_i - max(eneBeatHand, usBeatHand)  # 目前的模拟距离实际对局中吃子有多少步
     if moveNum < _maxMoveNum:  # 不满足磨棋的先决条件
         return False, None
     else:
-        maxMoveNum = moveNum - _maxMoveNum  # 剩余最大不吃子次数
         count = 0
         node_i = node
         isMoqi = False
@@ -395,11 +394,12 @@ def game_end(node):
                 else:
                     break  # 吃子了，未磨棋
                 # 到达指定步数未吃子，确定磨棋
-                if count == maxMoveNum:
+                if count == _maxMoveNum:
                     isMoqi = True
                     break
                 # 看上一手
                 node_i = node_i.parent  # 前面已经确定不是第二层，这里不用判断了
+        print('模拟中实际未吃子次数',count)
 
         if not isMoqi:
             return False, None
