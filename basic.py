@@ -26,7 +26,7 @@ def IsEneChess(i, j, cMap):
 
 
 # i,j位置是否本方可移动的棋子
-def IsMyMovingChess(i, j, posList, cMap):
+def IsMyMovingChess(i, j, posList, cMap,proTable):
     if cMap[i][j] >= 1 and cMap[i][j] <= 9 or cMap[i][j] == 11:  # warning :crossline?
         return 1
     else:
@@ -161,16 +161,17 @@ def getNearPos(i, j):
     return result
 
 
-def IsEneMovingChess(i, j, posList, cMap):
+def IsEneMovingChess(i, j, posList, cMap,proTable):
     if (cMap[i][j] == 13):
-        Enetype = eneSta.findChess(i, j, posList)
-        if (Enetype == dilei or type == junqi):
+        sub = eneSta.findChess(j, i, posList)
+        #print(i,j,sub)
+        if (proTable[sub][dilei] == 1 or proTable[sub][junqi] == 1):
             return 0
         else:
             return 1
 
 
-def getAccessibility(i, j, isEne, posList, cMap):
+def getAccessibility(i, j, isEne, posList, cMap,proTable):
     result = []
     if isEne:
         isMovingChess = IsEneMovingChess
@@ -180,8 +181,8 @@ def getAccessibility(i, j, isEne, posList, cMap):
         isMovingChess = IsMyMovingChess
         isChess = IsMyChess
         isInvChess = IsEneChess
-
-    if (isMovingChess(i, j, posList, cMap) and not (IsBaseCamp(i, j))) or (i==2 and j==2 and not(IsBaseCamp(i, j))):  # 己方不在大本营的可移动棋子
+    #if (isMovingChess(i, j, posList, cMap) and not (IsBaseCamp(i, j))) or (i==2 and j==2 and not(IsBaseCamp(i, j))):  # 己方不在大本营的可移动棋子
+    if (isMovingChess(i, j, posList, cMap,proTable) and not (IsBaseCamp(i, j))) :  # 己方不在大本营的可移动棋子
         y2 = i
         x2 = j
         # 可以前移:不在第一行,不在山界后,前方不是己方棋子,前方不是有棋子占领的行营
