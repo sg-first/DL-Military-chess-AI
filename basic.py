@@ -181,7 +181,7 @@ def getAccessibility(i, j, isEne, posList, cMap):
         isChess = IsMyChess
         isInvChess = IsEneChess
 
-    if isMovingChess(i, j, posList, cMap) and not (IsBaseCamp(i, j)):  # 己方不在大本营的可移动棋子
+    if (isMovingChess(i, j, posList, cMap) and not (IsBaseCamp(i, j))) or (i==2 and j==2 and not(IsBaseCamp(i, j))):  # 己方不在大本营的可移动棋子
         y2 = i
         x2 = j
         # 可以前移:不在第一行,不在山界后,前方不是己方棋子,前方不是有棋子占领的行营
@@ -202,7 +202,7 @@ def getAccessibility(i, j, isEne, posList, cMap):
         y2 = i
         x2 = j
         # 可以左移:不在最左列,左侧不是己方棋子,左侧不是被占用的行营
-        if j > 0 and not (IsAcrossRailway(i)) and not (isChess(i, j - 1, cMap)) and not (IsFilledCamp(i, j - 1, cMap)):
+        if j > 0 and not (IsAcrossRailway(i)) and not (isChess(i, j - 1, cMap)) and not (IsFilledCamp(i, j - 1, cMap)):#不在铁路上
             x2 = j - 1
             result.append((y2, x2))
         else:
@@ -223,7 +223,6 @@ def getAccessibility(i, j, isEne, posList, cMap):
         else:
             k=1
             while x2 < 4 and IsAcrossRailway(i) and not (isChess(i, x2 + 1, cMap)) and not (IsFilledCamp(i, x2 + 1, cMap)):
-                # k = k + 1
                 x2 = j + k
                 k += 1
                 result.append((y2, x2))
@@ -295,11 +294,10 @@ def getAccessibility(i, j, isEne, posList, cMap):
 
         # 可以右下出行营:目前位置为行营且右下不是己方棋子
         if IsMoveCamp(i, j) and not (isChess(i + 1, j + 1, cMap)):
-            if not IsMoveCamp(i + 1, j + 1) and IsFilledCamp(i + 1, j + 1, cMap):
+            if not (IsMoveCamp(i + 1, j + 1) and IsFilledCamp(i + 1, j + 1, cMap)):
                 y2 = i + 1
                 x2 = j + 1
                 result.append((y2, x2))
-
     return result
 
 
