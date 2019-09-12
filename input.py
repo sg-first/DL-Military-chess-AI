@@ -44,12 +44,14 @@ if __name__=='__main__':
                     chessOther[i + 3] = tempassess[i]
                 train.situation(chessMap, chessProb, chessPos, chessOther, winorlose)
 
-    print(len(train.winList))
-    print(len(train.loseList))
+    winNum=len(train.winList)
+    loseNum=len(train.loseList)
+    print(winNum)
+    print(loseNum)
 
     import value_net
-    model=value_net.PolicyValueNet('model0.pkl')
-    train.train(model,600,1200,10)
-    train.test(model,1200)
+    model=value_net.PolicyValueNet('model1.pkl')
+    train.train(model,1000,winNum*2,int((winNum+loseNum)/winNum*2))
+    train.test(model,1200) # fix:为了好数，建议设置为winNum*2取整百
 
-    model.save_model('model1.pkl')
+    model.save_model('model2.pkl')
