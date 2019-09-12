@@ -7,6 +7,7 @@ if __name__=='__main__':
         for file in files:
             filePath=os.path.join(root, file)
             f = open(filePath, "r")
+            print(filePath)
             fr = f.read()
             diary = fr.split("@")
             outdiary = [[0 for _ in range(6)] for i in range(len(diary) - 1)]
@@ -27,10 +28,10 @@ if __name__=='__main__':
                 tempchessNum = outdiary[i][3].split()
                 tempassess = outdiary[i][5].split()
                 if(isfirst==True):
-                    chessMap=inputHelp.inputMap(tempmap,0)
+                    chessMap=inputHelp.inputMap(tempmap,0,isfirst)
                     isfirst = False
                 else:
-                    chessMap=inputHelp.inputMap(tempmap,1)
+                    chessMap=inputHelp.inputMap(tempmap,1,isfirst)
                 chessProb = inputHelp.inputProb(tempProb1, 1)
                 chessPos = inputHelp.inputPos(tempPos1, 1)
                 tempRounds = inputHelp.inputRounds(tempRounds1)
@@ -48,5 +49,5 @@ if __name__=='__main__':
 
     import value_net
     model=value_net.PolicyValueNet()
-    train.train(model,1000,5000)
+    train.train(model,1000,600,10)
     train.test(model,5000)
