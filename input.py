@@ -5,7 +5,8 @@ import inputHelp
 if __name__=='__main__':
     for root, dirs, files in os.walk(r"D:/日记"):
         for file in files:
-            f = open(os.path.join(root, file), "r")
+            filePath=os.path.join(root, file)
+            f = open(filePath, "r")
             fr = f.read()
             diary = fr.split("@")
             outdiary = [[0 for _ in range(6)] for i in range(len(diary) - 1)]

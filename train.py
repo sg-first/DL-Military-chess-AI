@@ -24,35 +24,36 @@ class situation:
             loseList.append(self)
 
 
-def train(modelObj, epoch:int, batch_size:int):
-    random.shuffle(winList)
-    random.shuffle(loseList)
-    total_size=min(len(winList),len(loseList))
+def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
+    for _ in range(totEpoch):
+        random.shuffle(winList)
+        random.shuffle(loseList)
+        total_size=min(len(winList),len(loseList))
 
-    allBoard = []
-    allProbMap = []
-    allOtherFeature = []
-    allIsWin = []
+        allBoard = []
+        allProbMap = []
+        allOtherFeature = []
+        allIsWin = []
 
-    def add(sample, isWin):
-        allBoard.append([sample.board])
-        allProbMap.append([sample.probMap])
-        allOtherFeature.append(sample.otherFeature)
-        allIsWin.append(isWin)
+        def add(sample, isWin):
+            allBoard.append([sample.board])
+            allProbMap.append([sample.probMap])
+            allOtherFeature.append(sample.otherFeature)
+            allIsWin.append(isWin)
 
-    for i in range(total_size):
-        add(winList[i], 1)
-        add(loseList[i], 0)
+        for i in range(total_size):
+            add(winList[i], 1)
+            add(loseList[i], 0)
 
-    allBoard = np.array(allBoard)
-    allProbMap = np.array(allProbMap)
-    allOtherFeature = np.array(allOtherFeature)
-    allIsWin = np.array(allIsWin)
-    modelObj.train(allBoard, allProbMap, allOtherFeature, allIsWin, epoch, batch_size)
+        allBoard = np.array(allBoard)
+        allProbMap = np.array(allProbMap)
+        allOtherFeature = np.array(allOtherFeature)
+        allIsWin = np.array(allIsWin)
+        modelObj.train(allBoard, allProbMap, allOtherFeature, allIsWin, epoch, batch_size)
 
-    global trainNum
-    modelObj.save_model('model'+str(trainNum)+'.pkl')
-    trainNum += 1
+        global trainNum
+        modelObj.save_model('model'+str(trainNum)+'.pkl')
+        trainNum += 1
 
 def test(modelObj, batch_size:int):
     allBoard = []
