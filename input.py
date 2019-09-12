@@ -49,6 +49,7 @@ if __name__=='__main__':
 
     import value_net
     model=value_net.PolicyValueNet('model0.pkl')
-    train.train(model,1000,1200,10)
+    train.train(model,600,1200,10)
     train.test(model,1200)
+
     model.save_model('model1.pkl')

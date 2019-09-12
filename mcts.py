@@ -12,7 +12,7 @@ epoch = 1000 # 目前训练伦次
 n_epoch = 2500 # 期待训练轮次（超参数）
 n_playout = 10000 # 模拟次数（超参数）
 
-openMCTS=True
+openMCTS=False
 
 _n_qc = 1 # 快速走棋总次数，用于UCB公式计算（每手更新）
 
