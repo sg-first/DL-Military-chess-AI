@@ -94,7 +94,7 @@ class TreeNode:
                 else:
                     condition = basic.IsMyChess(i,j,self.cMap)
                 if condition:
-                    allPos=basic.getAccessibility(i,j,self.isEne,self.posList,self.cMap)
+                    allPos=basic.getAccessibility(i,j,self.isEne,self.posList,self.cMap,self.probTable)
                     print('layer:', self.layer)
                     for newi,newj in allPos:
                         print('move:',j,i,newj,newi)

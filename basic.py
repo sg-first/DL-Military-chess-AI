@@ -399,7 +399,6 @@ def game_end(node):
                     break
                 # 看上一手
                 node_i = node_i.parent  # 前面已经确定不是第二层，这里不用判断了
-        print('模拟中实际未吃子次数',count)
 
         if not isMoqi:
             return False, None
@@ -411,7 +410,7 @@ def game_end(node):
                 else:
                     _, _, isMove = node_i.move
                     if not isMove:  # 吃子了
-                        return False, node_i.isEne  # 吃子是它的父节点走的，所以是isEne，相当于not not isEne
+                        return True, node_i.isEne  # 吃子是它的父节点走的，所以是isEne，相当于not not isEne
             # 上次吃子不在模拟里
             if eneBeatHand > usBeatHand:  # 大的后吃子，胜出
                 return True, False
