@@ -48,6 +48,7 @@ if __name__=='__main__':
     print(len(train.loseList))
 
     import value_net
-    model=value_net.PolicyValueNet()
-    train.train(model,1000,600,10)
-    train.test(model,5000)
+    model=value_net.PolicyValueNet('model0.pkl')
+    train.train(model,1000,1200,10)
+    train.test(model,1200)
+    model.save_model('model1.pkl')
