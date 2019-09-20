@@ -42,7 +42,7 @@ if __name__=='__main__':
                     chessOther[i + 1] = tempchessNum[i]
                 for i in range(7):
                     chessOther[i + 3] = tempassess[i]
-                train.situation(chessMap, chessProb, chessPos, chessOther, winorlose)
+                train.situation(chessMap, chessProb, chessPos, chessOther, winorlose, filePath)
 
     winNum=len(train.winList)
     loseNum=len(train.loseList)

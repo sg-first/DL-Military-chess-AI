@@ -12,8 +12,12 @@ def makeCompleteProbMap(probMap,posList):
     return probMap
 
 class situation:
-    def __init__(self, board:list, probMap:list, posList:list, otherFeature:list, isWin:bool):
+    def __init__(self, board:list, probMap:list, posList:list, otherFeature:list, isWin:bool, log:str):
         self.board = np.array(board)
+
+        if self.board.shape != (12,5):
+            print('Error shape: '+log)
+
         self.probMap = np.array(makeCompleteProbMap(probMap,posList))
         self.probMap = self.probMap.T
         self.otherFeature = np.array(otherFeature)
