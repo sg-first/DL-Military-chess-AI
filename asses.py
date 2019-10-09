@@ -145,43 +145,43 @@ def valuecrosshill(i):
     else:
          return 0
 
-def valueNear(i,j,cMap,node):
+def valueNear(i,j,node):
     allPos=basic.getNearPos(i,j)
     global eneMax
     eneMax=0
     friMax=0
     for p in allPos:
         i2, j2 = p
-        if not cMap[i2][j2] == 0:
-            if cMap[i2][j2] == 13:
+        if not node.cMap[i2][j2] == 0:
+            if node.cMap[i2][j2] == 13:
                 s = getChessStrength(eneSta.findChess(j2, i2, node.posList), node)
                 if s > eneMax:
                     eneMax = s
             else:
-                s = codeToStrength2(codeToType(cMap[i2][j2]))
+                s = codeToStrength2(codeToType(node.cMap[i2][j2]))
                 if s > friMax:
                     friMax = s
     value=0
-    myStrength=codeToStrength2(codeToType(cMap[i][j]))
+    myStrength=codeToStrength2(codeToType(node.cMap[i][j]))
     if(eneMax>=myStrength):
         value=-eneMax
     if(friMax>myStrength):
         value+=friMax/2
     return value
 
-def valueEstimation(cMap,node):
+def valueEstimation(node):
     ff1=ff2=ff3=ff4=ff5=ff6=ff7=0
     for i in range(12):
         for j in range(5):
-            if basic.IsMyChess(i,j,cMap):
-                type=codeToType(cMap[i][j])
+            if basic.IsMyChess(i,j,node.cMap):
+                type=codeToType(node.cMap[i][j])
                 junqi = basic.findJunqi(node.probTable)
                 if (not(junqi == -1)) and eneSta.isDie(junqi,node.posList):
                     ff7+=1000
                 ff1 += codeToStrength2(type)
                 ff2 += valueLocation(i, j)
                 ff3 += valueMotivation(type)
-                ff4 += valuelast3line(i, j,cMap)
-                ff5 += valueNear(i, j,cMap,node)
+                ff4 += valuelast3line(i, j,node.cMap)
+                ff5 += valueNear(i, j,node)
                 ff6 += valuecrosshill(i)
     return (ff1,ff2,ff3,ff4,ff5,ff6,ff7)

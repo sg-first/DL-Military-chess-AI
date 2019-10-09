@@ -1,16 +1,12 @@
 import help
 import basic
 import simulate
-import playout
 import asses
 import value_net
 import train
-import math
 
 model = value_net.PolicyValueNet('model0.pkl')
-epoch = 1000 # 目前训练伦次
-n_epoch = 2500 # 期待训练轮次（超参数）
-n_playout = 10000 # 模拟次数（超参数）
+searchLayerNum=4
 
 openMCTS=False
 
@@ -29,64 +25,29 @@ class TreeNode:
         self.children = []
         self._n_visits = 1  # 快速走棋次数
 
-        # 不管是我方还是敌方，胜率都是以我方为标准，但是选择的时候敌方的层选min
-        probMap = help.copy2DList(probTable)
-        probMap = train.makeCompleteProbMap(probMap, posList)
-        myChessNum, eneChessNum=basic.caluChessNum(self.cMap) # 我方、敌方棋子数
-        estResult = asses.valueEstimation(cMap,self) # 局面评估七项
-        self.nnQ = model.predict(self.cMap, probMap, basic.handNum+self.layer, myChessNum, eneChessNum,
-                            estResult) # 神经网络胜率，构造时立即预测
-        self.qcQ = 0 # 快速走棋胜率
-        self.qcScore = 0 # 快速走棋得分
+
+    def estimation(self,alpha,beta):
+        if self.layer==searchLayerNum:
+            # 不管是我方还是敌方，胜率都是以我方为标准，但是选择的时候敌方的层选min
+            probMap = help.copy2DList(probTable)
+            probMap = train.makeCompleteProbMap(probMap, posList)
+            myChessNum, eneChessNum = basic.caluChessNum(self.cMap) # 我方、敌方棋子数
+            estResult = asses.valueEstimation(self) # 局面评估七项
+            self.nnQ = model.predict(self.cMap, probMap, basic.handNum+self.layer, myChessNum, eneChessNum,
+                                estResult) # 神经网络胜率，构造时立即预测
+            return -self.nnQ # 这里没有扩展，评估的就是当前层，所以得和在extend里的调用负负得正
+        else:
+            return self.extend(alpha,beta) # 传进来的时候已经倒完了，这里直接传即可
+
 
     def select(self,useUCB=True):
-        def s():
-            if self.isEne:
-                return min(self.children, key=lambda x: x.getValue(useUCB))
-            else:
-                return max(self.children, key=lambda x: x.getValue(useUCB))
-
-        if self.is_leaf():
-            end, isWin = basic.game_end(self) # 检查游戏是否结束
-            if not end:
-                self.extend()
-                return s()
-            else:
-                self.update_recursive(isWin) # 递归更新快速走棋评分
-                return None
+        if self.isEne:
+            return min(self.children, key=lambda x: x.nnQ)
         else:
-            return s()
+            return max(self.children, key=lambda x: x.nnQ)
 
-    def update(self,isWin:int):
-        """完成一次快速走棋之后更新本节点快速走棋评分
-        """
-        self._n_visits += 1
-        self.qcScore += isWin
-        self.qcQ += self.qcScore / (self._n_visits-1) # 取频率为概率
 
-    def update_recursive(self, isWin:int):
-        """更新所有父节点的快速走棋评分
-        """
-        if self.parent:
-            self.parent.update_recursive(isWin)
-        self.update(isWin)
-
-    def getValue(self, useUCB=True):
-        """计算并返回此节点的加权Q值，用于指导下一步扩展或直接给出最优落子
-        """
-        nnPar = epoch/n_epoch
-        if useUCB:
-            weightingQcQ = self.qcQ + math.sqrt((2*help.ln(_n_qc)/self._n_visits)) # UCB选取
-        else:
-            weightingQcQ = self.qcQ
-        return nnPar*self.nnQ + (1-nnPar)*weightingQcQ # 与神经网络Q加权
-        # （通过调参可实现只用MSTC不考虑神经网络，反之应当直接设openMCTS=False）
-
-    def extend(self):
-        print('extend:')
-        import numpy as np
-        print(np.array(self.cMap))
-
+    def extend(self,alpha,beta):
         for i in range(12):
             for j in range(5):
                 if self.isEne:
@@ -102,26 +63,19 @@ class TreeNode:
                         print('棋子2:',self.cMap[newi][newj])
                         cMap, isMove, posList = simulate.simMove(self,j,i,newj,newi,self.isEne)
                         # 扩展子节点
-                        self.children.append(TreeNode(not self.isEne, cMap, self.probTable, posList, self.layer+1,
-                                                      ((i,j),(newi,newj),isMove), self))
+                        newNode=TreeNode(not self.isEne, cMap, self.probTable, posList, self.layer+1,
+                                            ((i,j),(newi,newj),isMove), self)
+                        self.children.append(newNode)
+                        newNode.nnQ = -newNode.estimation(-beta, -alpha)  # 对该子节点评估
+                        if newNode.nnQ > alpha:  # 更新最大值
+                            alpha = newNode.nnQ
+                        if alpha>=beta:
+                            return alpha
+        return alpha
+
 
     def is_leaf(self):
         return len(self.children) == 0
-
-    def playout(self):
-        if self.is_leaf():
-            end, isWin = basic.game_end(self) # 检查游戏是否结束
-            if not end:
-                self.extend()
-
-                import numpy as np
-                print(np.array(self.cMap))
-
-                playout._playout(self).playout()  # playout._playout(self)最后一步要把走法转换为self对应的子节点（然后递归调用）
-            else:
-                self.update_recursive(isWin) # 递归更新快速走棋评分
-        else:
-            playout._playout(self).playout()  # playout._playout(self)最后一步要把走法转换为self对应的子节点
 
 
 lastUsNum = None # 上次使用MCTS时我方棋子数
@@ -160,24 +114,9 @@ class MCTS:
         # 环境初始化完毕，创建根节点
         self.root = TreeNode(False, cMap, probTable, posList)
 
-    def simulation(self): # 调用一次是一次模拟，为了获取更好的快速走棋评分
-        node = self.root
-        while(node is not None):
-            if node._n_visits == 1: # 没有进行过快速走棋（没有看过）
-                if not (epoch>(n_epoch*3/4) and (node.nnQ>0.7 or node.nnQ<0.3)): # 不满足无快速走棋选择条件
-                   node.playout() # 使用快速走棋走到结束
-            node = node.select() # 模拟走棋的扩展需开启UCB给探索提供更多可能性
-
     def get_best_move(self):
-        if openMCTS:
-            # 开始模拟
-            for _ in range(n_playout):
-                self.simulation() # 这里面会根据情况进行扩展
-        else:
-            self.root.extend() # 不模拟直接用神经网络评分，所以直接在这里给根节点扩展一次即可
-
-        p1,p2,isMove = self.root.select(False).move # 最终求结果的扩展不开启UCB，得到目前信息下的最近似结果
-
+        self.root.extend(-100000,100000)
+        p1,p2,isMove = self.root.select(False).move
         return (p1,p2)
 
 import configparser
