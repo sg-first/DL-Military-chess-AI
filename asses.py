@@ -128,12 +128,20 @@ def valueMotivation(type):
     else:
         return codeToStrength2(type)/9
 
-def shortestpathtojunqi(i,j):
-    return abs(11-i)+abs(3-j)
+def shortestpathtojunqi(i,j,cMap):
+    if (getselfjunqi(cMap)):
+        return abs(11-i)+abs(3-j)
+    else:
+        return abs(11-i)+abs(1-j)
 
 def valuelast3line(i,j,cMap):
     if i>8 and cMap[i][j] != 12:
-        return 15/shortestpathtojunqi(i, j)
+        return 15/shortestpathtojunqi(i, j,cMap)
+    else:
+        return 0
+def getselfjunqi(cmap):
+    if(cmap[11][3]==12):
+        return 1
     else:
         return 0
 
