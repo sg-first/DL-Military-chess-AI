@@ -1,8 +1,9 @@
 from keras.engine.topology import Input
 from keras.engine.training import Model
 from keras.layers.convolutional import Conv2D
-from keras.layers.core import Activation, Dense, Flatten, Lambda
-from keras.layers.normalization import BatchNormalization
+from keras.layers.core import Dense, Flatten, Lambda
+from keras.layers import MaxPooling2D, MaxPooling3D
+import LossHistory
 from keras.regularizers import l2
 from keras.optimizers import Adam
 import keras.backend as K
@@ -20,45 +21,43 @@ class PolicyValueNet():
 
 
     def create_net(self):
-        board = Input((1, 12, 5))
-        probTable = Input((1, 12+2, 25)) # 多出来那两个是对应的坐标（注意转置）
+        board = Input((1, 21, 21))
+        # probTable = Input((1, 12+2, 25)) # 多出来那两个是对应的坐标（注意转置）
         otherFeature = Input((10,)) # 目前手数，我方棋子数，敌方棋子数，局面评估7项
 
         # conv layers
-        network1 = Conv2D(filters=8, kernel_size=(3, 3), padding="same", data_format="channels_first",
-                         activation="relu", kernel_regularizer=l2(self.l2_const))(board)
         network1 = Conv2D(filters=32, kernel_size=(3, 3), padding="same", data_format="channels_first",
+                         activation="relu", kernel_regularizer=l2(self.l2_const))(board)
+        network1 = Conv2D(filters=64, kernel_size=(3, 3), padding="same", data_format="channels_first",
                          activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
-        network2 = Conv2D(filters=8, kernel_size=(3, 3), padding="same", data_format="channels_first",
-                          activation="relu", kernel_regularizer=l2(self.l2_const))(probTable)
-        network2 = Conv2D(filters=32, kernel_size=(3, 3), padding="same", data_format="channels_first",
-                          activation="relu", kernel_regularizer=l2(self.l2_const))(network2)
-        # 后面的设置需要斟酌
-        network1 = Conv2D(filters=4, kernel_size=(1, 1), data_format="channels_first", activation="relu",
-                           kernel_regularizer=l2(self.l2_const))(network1)
-        network1 = Conv2D(filters=2, kernel_size=(1, 1), data_format="channels_first", activation="relu",
-                           kernel_regularizer=l2(self.l2_const))(network1)
-        network2 = Conv2D(filters=4, kernel_size=(1, 1), data_format="channels_first", activation="relu",
-                          kernel_regularizer=l2(self.l2_const))(network2)
-        network2 = Conv2D(filters=2, kernel_size=(1, 1), data_format="channels_first", activation="relu",
-                          kernel_regularizer=l2(self.l2_const))(network2)
+        network1 = Conv2D(filters=128, kernel_size=(3, 3), padding="same", data_format="channels_first",
+                          activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
+        network1 = MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format='channels_first')(network1)
+        network1 = Conv2D(filters=16, kernel_size=(3, 3), padding="same", data_format="channels_first",
+                          activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
+        network1 = Conv2D(filters=4, kernel_size=(3, 3), padding="same", data_format="channels_first",
+                          activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
+        network1 = Conv2D(filters=1, kernel_size=(3, 3), padding="same", data_format="channels_first",
+                          activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
+        network1 = MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format='channels_first')(network1)
 
         # state value layers
         network1 = Flatten()(network1)
-        network2 = Flatten()(network2)
-        value_net = Lambda(lambda x: K.concatenate([x[0], x[1]]), output_shape=(820,))([network1, network2])
-        value_net = Lambda(lambda x: K.concatenate([x[0],x[1]]), output_shape=(830,))([value_net,otherFeature]) # 考虑其它特征
-        value_net = Dense(32, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net)
-        value_net = Dense(16, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net) # 这里原来是线性层，改成了relu
-        self.value_net = Dense(1, activation="tanh", kernel_regularizer=l2(self.l2_const))(value_net)
+        value_net = Lambda(lambda x: K.concatenate([x[0], x[1]]), output_shape=(35,))([network1, otherFeature])
+        value_net = Dense(16, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net)
+        value_net = Dense(8, activation='relu', kernel_regularizer=l2(self.l2_const))(value_net) # 这里原来是线性层，改成了relu
+        self.value_net = Dense(1, activation="sigmoid", kernel_regularizer=l2(self.l2_const))(value_net)
 
-        self.model = Model(inputs=[board,probTable,otherFeature], outputs=self.value_net)
+        self.model = Model(inputs=[board,otherFeature], outputs=self.value_net)
+        # print(self.model.summary())
         self.model.compile(optimizer=Adam(), loss='mean_squared_error')
 
 
-    def train(self, board, probMap, otherFeature, isWin, epoch, batch_size):  # isWin与isFirstHand一样为bool列表，表示是否胜利
+    def train(self, board, otherFeature, isWin, epoch, batch_size):  # isWin与isFirstHand一样为bool列表，表示是否胜利
         # fix:目前所有胜利的局面值都为1，实际应当根据Q值更新公式给予远距离的局面一些折扣？
-        self.model.fit([board, probMap, otherFeature], isWin, batch_size=batch_size, epochs=epoch)
+        history = LossHistory.LossHistory()
+        self.model.fit([board, otherFeature], isWin, batch_size=batch_size, epochs=epoch, callbacks=[history])
+        return history
 
     def predict(self, board, probMap, rounds, myChessNum, eneChessNum, estResult): # 预测的是一个
         otherFeature=[rounds,myChessNum,eneChessNum]+list(estResult)

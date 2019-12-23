@@ -27,6 +27,8 @@ class situation:
         else:
             loseList.append(self)
 
+def toVec(l):
+    return [n for a in l for n in a]
 
 def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
     for _ in range(totEpoch):
@@ -40,8 +42,15 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
         allIsWin = []
 
         def add(sample, isWin):
-            allBoard.append([sample.board])
-            allProbMap.append([sample.probMap])
+            def padding(board,probMap): # board和probMap连接
+                board=toVec(board)
+                probMap=toVec(probMap)
+                result=board+probMap
+                while len(result)<21*21:
+                    result.append(0)
+                return result
+            newBoard=padding(sample.board,sample.probMap)
+            allBoard.append([newBoard])
             allOtherFeature.append(sample.otherFeature)
             allIsWin.append(isWin)
 
@@ -50,10 +59,9 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
             add(loseList[i], 0)
 
         allBoard = np.array(allBoard)
-        allProbMap = np.array(allProbMap)
         allOtherFeature = np.array(allOtherFeature)
         allIsWin = np.array(allIsWin)
-        modelObj.train(allBoard, allProbMap, allOtherFeature, allIsWin, epoch, batch_size)
+        modelObj.train(allBoard, allOtherFeature, allIsWin, epoch, batch_size).loss_plot('epoch')
 
         global trainNum
         modelObj.save_model('model'+str(trainNum)+'.pkl')
