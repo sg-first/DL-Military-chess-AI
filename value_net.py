@@ -2,7 +2,7 @@ from keras.engine.topology import Input
 from keras.engine.training import Model
 from keras.layers.convolutional import Conv2D
 from keras.layers.core import Dense, Flatten, Lambda
-from keras.layers import MaxPooling2D, MaxPooling3D
+from keras.layers import MaxPooling2D
 import LossHistory
 from keras.regularizers import l2
 from keras.optimizers import Adam
@@ -22,7 +22,6 @@ class PolicyValueNet():
 
     def create_net(self):
         board = Input((1, 21, 21))
-        # probTable = Input((1, 12+2, 25)) # 多出来那两个是对应的坐标（注意转置）
         otherFeature = Input((10,)) # 目前手数，我方棋子数，敌方棋子数，局面评估7项
 
         # conv layers
