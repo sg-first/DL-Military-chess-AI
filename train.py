@@ -48,7 +48,7 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
                 result=board+probMap
                 while len(result)<21*21:
                     result.append(0)
-                return result
+                return np.array(result).reshape((21,21))
             newBoard=padding(sample.board,sample.probMap)
             allBoard.append([newBoard])
             allOtherFeature.append(sample.otherFeature)
