@@ -37,7 +37,6 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
         total_size=min(len(winList),len(loseList))
 
         allBoard = []
-        allProbMap = []
         allOtherFeature = []
         allIsWin = []
 
