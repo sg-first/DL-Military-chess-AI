@@ -30,6 +30,14 @@ class situation:
 def toVec(l):
     return [n for a in l for n in a]
 
+def padding(board, probMap):  # board和probMap连接
+    board = toVec(board)
+    probMap = toVec(probMap)
+    result = board + probMap
+    while len(result) < 21 * 21:
+        result.append(0)
+    return np.array(result).reshape((21, 21))
+
 def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
     for _ in range(totEpoch):
         random.shuffle(winList)
@@ -41,13 +49,6 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
         allIsWin = []
 
         def add(sample, isWin):
-            def padding(board,probMap): # board和probMap连接
-                board=toVec(board)
-                probMap=toVec(probMap)
-                result=board+probMap
-                while len(result)<21*21:
-                    result.append(0)
-                return np.array(result).reshape((21,21))
             newBoard=padding(sample.board,sample.probMap)
             allBoard.append([newBoard])
             allOtherFeature.append(sample.otherFeature)
@@ -60,7 +61,7 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
         allBoard = np.array(allBoard)
         allOtherFeature = np.array(allOtherFeature)
         allIsWin = np.array(allIsWin)
-        modelObj.train(allBoard, allOtherFeature, allIsWin, epoch, batch_size).loss_plot('epoch')
+        modelObj.train(allBoard, allOtherFeature, allIsWin, epoch, batch_size)
 
         global trainNum
         modelObj.save_model('model'+str(trainNum)+'.pkl')
@@ -68,7 +69,6 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
 
 def test(modelObj, batch_size:int):
     allBoard = []
-    allProbMap = []
     allOtherFeature = []
     allIsWin = []
 
@@ -79,17 +79,16 @@ def test(modelObj, batch_size:int):
         else:
             sample = random.choice(loseList)
 
-        allBoard.append([sample.board])
-        allProbMap.append([sample.probMap])
+        newBoard = padding(sample.board, sample.probMap)
+        allBoard.append([newBoard])
         allOtherFeature.append(sample.otherFeature)
         allIsWin.append(int(isWin))
         isWin = not isWin
 
     allBoard = np.array(allBoard)
-    allProbMap = np.array(allProbMap)
     allOtherFeature = np.array(allOtherFeature)
     allIsWin = np.array(allIsWin)
 
-    pos,neg=modelObj.test(allBoard,allProbMap,allOtherFeature,allIsWin)
+    pos,neg=modelObj.test(allBoard,allOtherFeature,allIsWin)
     print(pos, '/', batch_size / 2)
     print(neg, '/', batch_size / 2)
