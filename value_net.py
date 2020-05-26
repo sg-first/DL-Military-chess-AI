@@ -10,6 +10,12 @@ import keras.backend as K
 import pickle
 import numpy as np
 
+callback_list = [
+        callbacks.EarlyStopping(monitor="val_loss", patience=70),
+        callbacks.ModelCheckpoint(filepath="model_1.h5", monitor="val_loss", save_best_only=True),
+        callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.7, verbose=1, patience=5)
+    ]
+
 class PolicyValueNet():
     def __init__(self, model_file=None):
         self.l2_const = 1e-4  # coef of l2 penalty
@@ -49,13 +55,13 @@ class PolicyValueNet():
 
         self.model = Model(inputs=[board,otherFeature], outputs=self.value_net)
         # print(self.model.summary())
-        self.model.compile(optimizer=Adam(), loss='mean_squared_error')
+        self.model.compile(optimizer=Adam(), loss="binary_crossentropy",metrics=["acc"])
 
 
     def train(self, board, otherFeature, isWin, epoch, batch_size):  # isWin与isFirstHand一样为bool列表，表示是否胜利
         # fix:目前所有胜利的局面值都为1，实际应当根据Q值更新公式给予远距离的局面一些折扣？
         history = LossHistory.LossHistory()
-        self.model.fit([board, otherFeature], isWin, batch_size=batch_size, epochs=epoch, callbacks=[history])
+        self.model.fit([board, otherFeature], isWin, batch_size=batch_size, epochs=epoch, callbacks=callback_list, validation_split=0.3)
         return history
 
     def predict(self, board, probMap, rounds, myChessNum, eneChessNum, estResult): # 预测的是一个
