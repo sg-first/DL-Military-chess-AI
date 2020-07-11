@@ -3,6 +3,7 @@ from keras.engine.training import Model
 from keras.layers.convolutional import Conv2D
 from keras.layers.core import Dense, Flatten, Lambda
 from keras.layers import MaxPooling2D
+import keras.callbacks as callbacks
 import LossHistory
 from keras.regularizers import l2
 from keras.optimizers import Adam
