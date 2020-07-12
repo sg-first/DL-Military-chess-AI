@@ -20,7 +20,7 @@ def Recall(y_true, y_pred):
 
 callback_list = [
         callbacks.EarlyStopping(monitor="val_loss", patience=70),
-        callbacks.ModelCheckpoint(filepath="model_1.h5", monitor="val_loss", save_best_only=True),
+        # callbacks.ModelCheckpoint(filepath="model_1.h5", monitor="val_loss", save_best_only=True),
         callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.7, verbose=1, patience=5)
     ]
 
@@ -80,8 +80,8 @@ class PolicyValueNet():
         probMap=np.array([[probMap]]) # 后包两层
         return self.model.predict([board,probMap,otherFeature])[0]
 
-    def test(self,board,probMap,otherFeature,isWin): # 应该直接在fit时用交叉验证，不用这个
-        result=self.model.predict([board, probMap, otherFeature])
+    def test(self,board,otherFeature,isWin): # 应该直接在fit时用交叉验证，不用这个
+        result=self.model.predict([board, otherFeature])
         posRight=0
         negRight=0
         for i in range(len(isWin)):
