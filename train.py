@@ -54,7 +54,7 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
             allOtherFeature.append(sample.otherFeature)
             allIsWin.append(isWin)
 
-        for i in range(total_size):
+        for i in range(total_size): # 每次训练里面抽total_size个(winNum+loseNum)/batch_size个)，全过一遍
             add(winList[i], 1)
             add(loseList[i], 0)
 

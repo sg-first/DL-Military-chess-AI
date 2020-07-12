@@ -11,6 +11,13 @@ import keras.backend as K
 import pickle
 import numpy as np
 
+def Recall(y_true, y_pred):
+    """召回率"""
+    tp = K.sum(K.round(K.clip(y_true * y_pred, 0, 1))) # true positives
+    pp = K.sum(K.round(K.clip(y_true, 0, 1))) # possible positives
+    recall = tp / (pp + K.epsilon())
+    return recall
+
 callback_list = [
         callbacks.EarlyStopping(monitor="val_loss", patience=70),
         callbacks.ModelCheckpoint(filepath="model_1.h5", monitor="val_loss", save_best_only=True),
@@ -34,10 +41,10 @@ class PolicyValueNet():
         # conv layers
         network1 = Conv2D(filters=32, kernel_size=(3, 3), padding="same", data_format="channels_first",
                          activation="relu", kernel_regularizer=l2(self.l2_const))(board)
-        network1 = Conv2D(filters=64, kernel_size=(3, 3), padding="same", data_format="channels_first",
-                         activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
-        network1 = Conv2D(filters=128, kernel_size=(3, 3), padding="same", data_format="channels_first",
-                          activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
+        # network1 = Conv2D(filters=64, kernel_size=(3, 3), padding="same", data_format="channels_first",
+        #                  activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
+        # network1 = Conv2D(filters=128, kernel_size=(3, 3), padding="same", data_format="channels_first",
+        #                   activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
         network1 = MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format='channels_first')(network1)
         network1 = Conv2D(filters=16, kernel_size=(3, 3), padding="same", data_format="channels_first",
                           activation="relu", kernel_regularizer=l2(self.l2_const))(network1)
@@ -55,8 +62,8 @@ class PolicyValueNet():
         self.value_net = Dense(1, activation="sigmoid", kernel_regularizer=l2(self.l2_const))(value_net)
 
         self.model = Model(inputs=[board,otherFeature], outputs=self.value_net)
-        # print(self.model.summary())
-        self.model.compile(optimizer=Adam(), loss="binary_crossentropy",metrics=["acc"])
+        print(self.model.summary())
+        self.model.compile(optimizer='Adam', loss="binary_crossentropy", metrics=["acc",Recall])
 
 
     def train(self, board, otherFeature, isWin, epoch, batch_size):  # isWin与isFirstHand一样为bool列表，表示是否胜利
