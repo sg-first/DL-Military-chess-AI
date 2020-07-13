@@ -6,6 +6,8 @@ trainNum = 0
 winList = []
 loseList = []
 
+# warn: probMap和posList用makeCompleteProbMap合成，（合成后的）probMap和board用toModelBoard合成
+
 def makeCompleteProbMap(probMap,posList):
     for i in range(25):
         probMap[i].append(posList[i][0]) # 会改变原来的probMap
