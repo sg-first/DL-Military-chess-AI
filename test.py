@@ -1,11 +1,11 @@
 import value_net
 import train
 
-model=value_net.PolicyValueNet('model0.h5')
+model=value_net.PolicyValueNet('model0.pkl')
 model.model.summary()
 
-cmap = [[0 for _ in range(5)] for _ in range(12)]
-probTable = [[0 for _ in range(12)] for _ in range(25)]
+cmap = [[13 for _ in range(5)] for _ in range(12)]
+probTable = [[0.5 for _ in range(12)] for _ in range(25)]
 posList = [[0 for _ in range(2)] for _ in range(25)]
 probMap=train.makeCompleteProbMap(probTable,posList)
 
