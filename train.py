@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import value_net
 
 trainNum = 0
 winList = []
@@ -27,17 +28,6 @@ class situation:
         else:
             loseList.append(self)
 
-def toVec(l):
-    return [n for a in l for n in a]
-
-def padding(board, probMap):  # board和probMap连接
-    board = toVec(board)
-    probMap = toVec(probMap)
-    result = board + probMap
-    while len(result) < 21 * 21:
-        result.append(0)
-    return np.array(result).reshape((21, 21))
-
 def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
     for _ in range(totEpoch):
         random.shuffle(winList)
@@ -49,8 +39,8 @@ def train(modelObj, epoch:int, batch_size:int, totEpoch:int):
         allIsWin = []
 
         def add(sample, isWin):
-            newBoard=padding(sample.board,sample.probMap)
-            allBoard.append([newBoard])
+            newBoard = value_net.toModelBoard(sample.board, sample.probMap)
+            allBoard.append(newBoard)
             allOtherFeature.append(sample.otherFeature)
             allIsWin.append(isWin)
 
@@ -79,8 +69,8 @@ def test(modelObj, batch_size:int):
         else:
             sample = random.choice(loseList)
 
-        newBoard = padding(sample.board, sample.probMap)
-        allBoard.append([newBoard])
+        newBoard = value_net.toModelBoard(sample.board, sample.probMap)
+        allBoard.append(newBoard)
         allOtherFeature.append(sample.otherFeature)
         allIsWin.append(int(isWin))
         isWin = not isWin
